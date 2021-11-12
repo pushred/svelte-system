@@ -1,0 +1,22 @@
+{
+  "name": "@svelte-system/generator",
+  "type": "module",
+  "version": "0.0.1",
+  "description": "Generates components for a Svelte System",
+  "author": "Eric Casthart <eric@pushred.co> (https://pushred.co)",
+  "license": "MIT",
+  "files": [
+    "lib"
+  ],
+  "main": "./lib/generate.js",
+  "bin": {
+    "generate-svelte-system-components": "./lib/cli.js"
+  },
+  "dependencies": {
+    "chalk": "^4.1.2",
+    "cosmiconfig": "^7.0.1",
+    "lodash.kebabcase": "^4.1.1",
+    "make-dir": "^3.1.0",
+    "meow": "^10.1.1"
+  }
+}
