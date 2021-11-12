@@ -1,0 +1,16 @@
+{
+  "name": "web",
+  "type": "module",
+  "version": "0.0.1",
+  "scripts": {
+    "generate-components": "generate-svelte-system-components",
+    "dev": "svelte-kit dev",
+    "build": "svelte-kit build",
+    "preview": "svelte-kit preview"
+  },
+  "devDependencies": {
+    "@svelte-system/generator": "workspace:*",
+    "@sveltejs/kit": "next",
+    "svelte": "^3.42.6"
+  }
+}
