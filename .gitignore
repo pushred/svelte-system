@@ -1,0 +1,17 @@
+.pnp.*
+.yarn/*
+
+!.yarn/patches
+!.yarn/releases
+!.yarn/plugins
+!.yarn/sdks
+!.yarn/versions
+
+build
+dist
+node_modules
+package
+
+.DS_Store
+.netlify
+.svelte-kit
