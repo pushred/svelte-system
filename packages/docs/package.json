@@ -1,0 +1,19 @@
+{
+  "name": "@svelte-system/docs",
+  "main": "./svelte-system-docs.js",
+  "type": "module",
+  "version": "0.0.1",
+  "description": "Generates reference docs for a Svelte System",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "generate-components": "svelte-system generate-components",
+    "serve": "vite preview"
+  },
+  "devDependencies": {
+    "@svelte-system/generator": "workspace:*",
+    "@sveltejs/vite-plugin-svelte": "^1.0.0-next.11",
+    "svelte": "^3.37.0",
+    "vite": "^2.6.4"
+  }
+}

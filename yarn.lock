@@ -1646,17 +1646,30 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@svelte-system/docs@workspace:*, @svelte-system/docs@workspace:packages/docs":
+  version: 0.0.0-use.local
+  resolution: "@svelte-system/docs@workspace:packages/docs"
+  dependencies:
+    "@svelte-system/generator": "workspace:*"
+    "@sveltejs/vite-plugin-svelte": ^1.0.0-next.11
+    svelte: ^3.37.0
+    vite: ^2.6.4
+  languageName: unknown
+  linkType: soft
+
 "@svelte-system/generator@workspace:*, @svelte-system/generator@workspace:packages/generator":
   version: 0.0.0-use.local
   resolution: "@svelte-system/generator@workspace:packages/generator"
   dependencies:
+    "@svelte-system/docs": "workspace:*"
     chalk: ^4.1.2
     cosmiconfig: ^7.0.1
+    lodash.groupby: ^4.6.0
     lodash.kebabcase: ^4.1.1
     make-dir: ^3.1.0
     sade: ^1.7.4
   bin:
-    generate-svelte-system-components: ./lib/cli.js
+    svelte-system: ./lib/cli.js
   languageName: unknown
   linkType: soft
 
@@ -1676,7 +1689,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@sveltejs/vite-plugin-svelte@npm:^1.0.0-next.30":
+"@sveltejs/vite-plugin-svelte@npm:^1.0.0-next.11, @sveltejs/vite-plugin-svelte@npm:^1.0.0-next.30":
   version: 1.0.0-next.30
   resolution: "@sveltejs/vite-plugin-svelte@npm:1.0.0-next.30"
   dependencies:
@@ -4628,6 +4641,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"lodash.groupby@npm:^4.6.0":
+  version: 4.6.0
+  resolution: "lodash.groupby@npm:4.6.0"
+  checksum: e2d4d13d12790a1cacab3f5f120b7c072a792224e83b2f403218866d18efde76024b2579996dfebb230a61ce06469332e16639103669a35a605287e19ced6b9b
+  languageName: node
+  linkType: hard
+
 "lodash.kebabcase@npm:^4.1.1":
   version: 4.1.1
   resolution: "lodash.kebabcase@npm:4.1.1"
@@ -5955,7 +5975,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"svelte@npm:^3.42.6, svelte@npm:^3.44.1":
+"svelte@npm:^3.37.0, svelte@npm:^3.42.6, svelte@npm:^3.44.1":
   version: 3.44.1
   resolution: "svelte@npm:3.44.1"
   checksum: 851f597c3e15b06261a9a907b7ddeb678ecf992070f06988dc9ba1445d437be19b11b6eea0eef839a932fdfe34c6a6132bed230a14fb0925ee795cfc66660662
@@ -6212,7 +6232,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"vite@npm:^2.6.12":
+"vite@npm:^2.6.12, vite@npm:^2.6.4":
   version: 2.6.14
   resolution: "vite@npm:2.6.14"
   dependencies:
