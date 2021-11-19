@@ -5,7 +5,7 @@ import { render } from '@testing-library/svelte'
 import { cosmiconfigSync } from 'cosmiconfig'
 import del from 'del'
 
-import { generateComponents, generateDocs } from './generate.js'
+import { generateComponents, getComponentDocs } from './generate.js'
 
 const mockConfig = cosmiconfigSync().search().config
 
@@ -42,7 +42,8 @@ describe('doc generation', () => {
   let content
 
   beforeAll(async () => {
-    content = await generateDocs({
+    content = await getComponentDocs({
+      componentsPath: mockConfig.outputPath,
       outputPath: mockConfig.outputPath,
       theme: mockConfig.theme,
     })

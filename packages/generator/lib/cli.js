@@ -2,12 +2,28 @@
 
 import { relative, resolve } from 'path'
 
+import { buildDocs } from '@svelte-system/docs'
+import { Config } from '@svelte-system/types/validation.js'
 import chalk from 'chalk'
 import { cosmiconfigSync } from 'cosmiconfig'
 import sade from 'sade'
+import { assert, StructError } from 'superstruct'
 
-import { generateComponents, generateDocs } from './generate.js'
+import { generateComponents, getComponentDocs } from './generate.js'
 
+/**
+ * @typedef { import('@svelte-system/types').CliOptions } CliOptions
+ * @typedef { import('@svelte-system/types').Config } UserConfig
+ */
+
+function lowerFirst(string = '') {
+  return `${string.charAt(0).toLowerCase()}${string.slice(1)}`
+}
+
+/**
+ * @param { CliOptions } options
+ * @returns { UserConfig | null | void }
+ */
 function getUserConfig(options) {
   const explorer = cosmiconfigSync('svelte-system')
 
@@ -21,7 +37,22 @@ function getUserConfig(options) {
     )
   }
 
-  return explorerResult.config
+  const userConfig = explorerResult.config
+
+  try {
+    assert(userConfig, Config)
+  } catch (err) {
+    if (!(err instanceof StructError)) return console.error(err)
+
+    console.error(
+      chalk.red('✘'),
+      `Provided configuration is invalid, ${lowerFirst(err.message)}`
+    )
+
+    return null
+  }
+
+  return userConfig
 }
 
 const cli = sade('svelte-system')
@@ -33,6 +64,8 @@ cli
   .option('-o --output', 'Path to output generated components')
   .action((options) => {
     const userConfig = getUserConfig(options)
+    if (!userConfig) return
+
     const outputPath = options.output || userConfig.componentsPath
     const relativeOutputPath = relative(resolve('..'), outputPath)
 
@@ -52,6 +85,7 @@ cli
   .option('-o --output', 'Path to output generated docs')
   .action(async (componentsPathArg, options) => {
     const userConfig = getUserConfig(options)
+    if (!userConfig) return
 
     const componentsPath = componentsPathArg
       ? resolve(process.cwd(), componentsPathArg)
@@ -60,11 +94,12 @@ cli
     const outputPath = options.output || userConfig.docsPath
     const relativeOutputPath = relative(resolve('..'), outputPath)
 
-    await generateDocs({
+    const componentDocs = await getComponentDocs({
       componentsPath,
-      outputPath,
       theme: userConfig.theme,
     })
+
+    await buildDocs({ components: componentDocs, outputPath })
 
     console.log(
       chalk.green('✔'),
