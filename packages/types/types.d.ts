@@ -1,13 +1,27 @@
 import { Infer } from 'superstruct'
-import { Config, ScaleValues, Theme } from './validation.js'
+
+import { Config, Theme } from './validation.js'
 
 type Config = Infer<typeof Config>
-type ScaleValues = Infer<typeof ScaleValues>
-
-type PropName = 'marginBottom' | 'testId'
 
 type Theme = Infer<typeof Theme>
-type ThemeCategory = keyof Theme
+type ThemeScale = ArrayScale | ObjectScale
+type ThemeScaleName = keyof Theme
+
+type ArrayScale = (number | string)[]
+
+type ObjectScale = {
+  [key: string]: number | string | ThemeArrayScale | ThemeObjectScale
+}
+
+type PropCategory =
+  | 'attributes'
+  | 'colors'
+  | 'flex'
+  | 'layout'
+  | 'sizes'
+  | 'space'
+  | 'typography'
 
 type CliOptions = {
   config: string
@@ -22,12 +36,12 @@ type ComponentDoc = {
 
 type ComponentSpec = {
   filename: string
-  propCategories: ThemeCategory[]
+  props: PropCategory[]
 }
 
 type Prop = {
-  category: ThemeCategory | 'any'
-  name: PropName
-  type: string
-  oneOf?: string[]
+  alias?: string
+  name: string
+  scale?: ThemeScaleName
+  values?: string[]
 }

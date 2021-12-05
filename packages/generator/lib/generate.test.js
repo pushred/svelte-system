@@ -34,7 +34,7 @@ describe('component generation', () => {
     })
 
     const el = getByTestId('a')
-    expect(el).toHaveClass('margin-bottom-1')
+    expect(el).toHaveClass('mb-1')
   })
 })
 
@@ -70,9 +70,7 @@ describe('doc generation', () => {
       (prop) => prop.name === 'marginBottom'
     )
 
-    expect(marginBottomProp.type).toEqual('integer')
-
-    expect(marginBottomProp.oneOf).toEqual(
+    expect(marginBottomProp.values).toEqual(
       expect.arrayContaining(Object.keys(mockConfig.theme.space))
     )
   })

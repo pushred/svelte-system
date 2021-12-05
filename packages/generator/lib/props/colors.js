@@ -5,13 +5,12 @@
 /** @type { Prop[] } */
 export const props = [
   {
-    category: 'space',
-    name: 'marginBottom',
-    type: 'integer',
+    alias: 'bgColor',
+    name: 'backgroundColor',
+    scale: 'colors',
   },
   {
-    category: 'any',
-    name: 'testId',
-    type: 'string',
+    name: 'color',
+    scale: 'colors',
   },
 ]

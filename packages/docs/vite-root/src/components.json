@@ -3,14 +3,9 @@
     "name": "Box",
     "props": [
       {
-        "category": "any",
-        "name": "testId",
-        "type": "string"
-      },
-      {
         "category": "space",
         "name": "marginBottom",
-        "type": "integer",
+        "alias": "mb",
         "oneOf": [
           "1",
           "2"

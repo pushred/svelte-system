@@ -1,8 +1,6 @@
 import { readdirSync, readFileSync, writeFileSync } from 'fs'
 import { basename, join } from 'path'
 
-import groupBy from 'lodash.groupby'
-import kebabCase from 'lodash.kebabcase'
 import makeDir from 'make-dir'
 import * as svelte from 'svelte/compiler'
 
@@ -10,20 +8,44 @@ import * as svelte from 'svelte/compiler'
 // TODO: dynamically import when we can use native ESM in Jest (should be optional peer dep)
 import prettier from 'prettier'
 
-import { props } from './config.js'
+import { props as attributeProps } from './props/attributes.js'
+import { props as colorProps } from './props/colors.js'
+import { props as flexProps } from './props/flex.js'
+import { props as layoutProps } from './props/layout.js'
+import { props as sizesProps } from './props/sizes.js'
+import { props as spaceProps } from './props/space.js'
+import { props as typographyProps } from './props/typography.js'
+
+import { getScaleStyles, getValueStyles } from './utils/index.js'
 
 /**
  * @typedef { import('@svelte-system/types').ComponentDoc } ComponentDoc
  * @typedef { import('@svelte-system/types').ComponentSpec } ComponentSpec
  * @typedef { import('@svelte-system/types').Prop } Prop
- * @typedef { import('@svelte-system/types').PropName } PropName
- * @typedef { import('@svelte-system/types').ScaleValues } ScaleValues
  * @typedef { import('@svelte-system/types').Theme } Theme
- * @typedef { import('@svelte-system/types').ThemeCategory } ThemeCategory
+ * @typedef { import('@svelte-system/types').ThemeScale } ThemeScale
  * @typedef {{ [key: string]: Prop }} PropsByName
  */
 
-const propsByCategory = groupBy(props, 'category')
+const props = [
+  ...attributeProps,
+  ...colorProps,
+  ...flexProps,
+  ...layoutProps,
+  ...sizesProps,
+  ...spaceProps,
+  ...typographyProps,
+]
+
+const propsByCategory = {
+  attributes: attributeProps,
+  colors: colorProps,
+  flex: flexProps,
+  layout: layoutProps,
+  sizes: sizesProps,
+  space: spaceProps,
+  typography: typographyProps,
+}
 
 /** @type {PropsByName} */
 const initialPropsByName = {}
@@ -38,7 +60,7 @@ const propsByName = props.reduce((accumulator, prop) => {
 const componentsToGenerate = [
   {
     filename: 'Box.svelte',
-    propCategories: ['space'],
+    props: ['colors', 'flex', 'layout', 'sizes', 'space', 'typography'],
   },
 ]
 
@@ -58,22 +80,41 @@ export function generateComponents({ outputPath, theme }) {
     /** @type string[] */
     const styles = []
 
-    component.propCategories.forEach((category) => {
-      const propNames = propsByCategory[category].map((prop) => prop.name)
+    component.props.forEach((category) => {
+      const props = propsByCategory[category]
 
-      const themeCategory = theme[category]
+      props.forEach((prop) => {
+        let hasStyles = false
 
-      propNames.forEach((prop) => {
-        exports.push(`export let ${prop} = undefined`)
+        if (prop.scale !== undefined && theme[prop.scale] !== undefined) {
+          hasStyles = true
 
-        Object.keys(themeCategory).forEach((key) => {
-          const cssProp = kebabCase(prop)
-          const className = kebabCase(`${prop}-${key}`)
-          const value = themeCategory[key]
+          const generated = getScaleStyles({
+            prop,
+            scale: theme[prop.scale],
+          })
+          classes.push(...generated.classes)
+          styles.push(...generated.styles)
+        }
 
-          classes.push(`class:${className}={${prop} === '${key}'}`)
-          styles.push(`.${className} { ${cssProp}: ${value} }`)
-        })
+        if (prop.values) {
+          hasStyles = true
+
+          const generated = getValueStyles({
+            prop,
+            values: prop.values,
+          })
+          classes.push(...generated.classes)
+          styles.push(...generated.styles)
+        }
+
+        if (hasStyles) {
+          exports.push(`export let ${prop.name} = undefined`)
+
+          if (prop.alias) {
+            exports.push(`export let ${prop.alias} = undefined`)
+          }
+        }
       })
     })
 
@@ -123,11 +164,18 @@ export async function getComponentDocs({ componentsPath, theme }) {
         .map(
           /** @param {Prop} prop */
           (prop) => {
-            if (prop.category === 'any') return prop
             // enrich docs with system values
+            const values = []
+
+            if (prop.scale && theme[prop.scale]) {
+              values.push(...Object.keys(theme[prop.scale]))
+            }
+
+            if (prop.values) values.push(...prop.values)
+
             return {
               ...prop,
-              oneOf: Object.keys(theme[prop.category]),
+              values,
             }
           }
         ),

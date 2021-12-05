@@ -7,9 +7,10 @@ import { Config } from '@svelte-system/types/validation.js'
 import chalk from 'chalk'
 import { cosmiconfigSync } from 'cosmiconfig'
 import sade from 'sade'
-import { assert, StructError } from 'superstruct'
+import { assert, StructError, type } from 'superstruct'
 
 import { generateComponents, getComponentDocs } from './generate.js'
+import { defaultTheme } from './theme.js'
 
 /**
  * @typedef { import('@svelte-system/types').CliOptions } CliOptions
@@ -38,9 +39,26 @@ function getUserConfig(options) {
   }
 
   const userConfig = explorerResult.config
+  const userTheme = userConfig.theme
+
+  const mergedConfig = {
+    ...userConfig,
+    theme: {
+      colors: userTheme.colors || defaultTheme.colors,
+      fonts: userTheme.fonts || defaultTheme.fonts,
+      fontSizes: userTheme.fontSizes || defaultTheme.fontSizes,
+      fontWeights: userTheme.fontWeights || defaultTheme.fontWeights,
+      lineHeights: userTheme.lineHeights || defaultTheme.lineHeights,
+      sizes: userTheme.sizes || defaultTheme.sizes,
+      space: userTheme.space || defaultTheme.space,
+      flexGrow: userTheme.flexGrow || defaultTheme.flexGrow,
+      flexShrink: userTheme.flexShrink || defaultTheme.flexShrink,
+      order: userTheme.order || defaultTheme.order,
+    },
+  }
 
   try {
-    assert(userConfig, Config)
+    assert(mergedConfig, Config)
   } catch (err) {
     if (!(err instanceof StructError)) return console.error(err)
 
@@ -48,6 +66,8 @@ function getUserConfig(options) {
       chalk.red('✘'),
       `Provided configuration is invalid, ${lowerFirst(err.message)}`
     )
+
+    console.dir(mergedConfig, { depth: null })
 
     return null
   }
