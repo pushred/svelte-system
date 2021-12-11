@@ -72,7 +72,7 @@ function getUserConfig(options) {
     return null
   }
 
-  return userConfig
+  return mergedConfig
 }
 
 const cli = sade('svelte-system')
