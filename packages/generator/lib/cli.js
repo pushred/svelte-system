@@ -7,9 +7,14 @@ import { Config } from '@svelte-system/types/validation.js'
 import chalk from 'chalk'
 import { cosmiconfigSync } from 'cosmiconfig'
 import sade from 'sade'
-import { assert, StructError, type } from 'superstruct'
+import { assert, StructError } from 'superstruct'
 
-import { generateComponents, getComponentDocs } from './generate.js'
+import {
+  generateComponents,
+  getComponentDocs,
+  generateDerivedComponents,
+} from './generate.js'
+
 import { defaultTheme } from './theme.js'
 
 /**
@@ -94,9 +99,15 @@ cli
       theme: userConfig.theme,
     })
 
+    const derivedComponents = generateDerivedComponents({
+      outputPath,
+    })
+
+    const componentCount = components.length + derivedComponents.length
+
     console.log(
       chalk.green('✔'),
-      `${components.length} components generated and saved to ${relativeOutputPath}`
+      `${componentCount} components generated and saved to ${relativeOutputPath}`
     )
   })
 

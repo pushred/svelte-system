@@ -8,6 +8,7 @@ import * as svelte from 'svelte/compiler'
 // TODO: dynamically import when we can use native ESM in Jest (should be optional peer dep)
 import prettier from 'prettier'
 
+import { Cache } from './cache.js'
 import { props as attributeProps } from './props/attributes.js'
 import { props as colorProps } from './props/colors.js'
 import { props as flexProps } from './props/flex.js'
@@ -21,11 +22,14 @@ import { getScaleStyles, getValueStyles } from './utils/index.js'
 /**
  * @typedef { import('@svelte-system/types').ComponentDoc } ComponentDoc
  * @typedef { import('@svelte-system/types').ComponentSpec } ComponentSpec
+ * @typedef { import('@svelte-system/types').DerivedComponentSpec } DerivedComponentSpec
  * @typedef { import('@svelte-system/types').Prop } Prop
  * @typedef { import('@svelte-system/types').Theme } Theme
  * @typedef { import('@svelte-system/types').ThemeScale } ThemeScale
  * @typedef {{ [key: string]: Prop }} PropsByName
  */
+
+const generatedComponentsCache = new Cache()
 
 const props = [
   ...attributeProps,
@@ -60,7 +64,20 @@ const propsByName = props.reduce((accumulator, prop) => {
 const componentsToGenerate = [
   {
     filename: 'Box.svelte',
+    name: 'Box',
     props: ['colors', 'flex', 'layout', 'sizes', 'space', 'typography'],
+  },
+]
+
+/** @type {DerivedComponentSpec[]} */
+const derivedComponentsToGenerate = [
+  {
+    defaultProps: {
+      display: 'flex',
+    },
+    filename: 'Flex.svelte',
+    name: 'Flex',
+    sourceComponent: 'Box',
   },
 ]
 
@@ -76,6 +93,9 @@ export function generateComponents({ outputPath, theme }) {
 
     /** @type string[] */
     const exports = []
+
+    /** @type string[] */
+    const generatedProps = []
 
     /** @type string[] */
     const styles = []
@@ -110,13 +130,17 @@ export function generateComponents({ outputPath, theme }) {
 
         if (hasStyles) {
           exports.push(`export let ${prop.name} = undefined`)
+          generatedProps.push(prop.name)
 
           if (prop.alias) {
             exports.push(`export let ${prop.alias} = undefined`)
+            generatedProps.push(prop.alias)
           }
         }
       })
     })
+
+    generatedComponentsCache.set(component.name, { generatedProps })
 
     const template = `
       <script>
@@ -142,6 +166,62 @@ export function generateComponents({ outputPath, theme }) {
 
   // return config for logging purposes
   return componentsToGenerate
+}
+
+/**
+ * @param {{ outputPath: string }} options
+ */
+export function generateDerivedComponents({ outputPath }) {
+  derivedComponentsToGenerate.forEach((component) => {
+    /** @type string[] */
+    const exports = []
+
+    /** @type string[] */
+    const props = []
+
+    const { defaultProps, sourceComponent } = component
+    const { generatedProps } = generatedComponentsCache.get(sourceComponent)
+
+    if (defaultProps) {
+      for (const [prop, value] of Object.entries(defaultProps)) {
+        props.push(`${prop}="${value}"`)
+      }
+    }
+
+    generatedProps.forEach(
+      /** @param {string} prop */
+      (prop) => {
+        if (defaultProps && defaultProps[prop] !== undefined) return
+        exports.push(`export let ${prop} = undefined`)
+        props.push(`{${prop}}`)
+      }
+    )
+
+    const template = `
+      <script>
+        import ${sourceComponent} from './${sourceComponent}.svelte'
+
+        export let testId = undefined
+        ${exports.join('\n')}
+      </script>
+
+      <${sourceComponent}
+        testId={testId}
+        ${props.join('\n')}
+      >
+        <slot />
+      </${sourceComponent}>
+    `
+
+    writeFileSync(
+      join(outputPath, component.filename),
+      // TODO: wrap this in a try/catch once we can use native ESM in Jest
+      prettier.format(template, { filepath: component.filename })
+    )
+  })
+
+  // return config for logging purposes
+  return derivedComponentsToGenerate
 }
 
 /** @param {{ componentsPath: string, theme: Theme }} options */
