@@ -1,9 +1,11 @@
 import { join } from 'path'
 
+import { Config } from '@svelte-system/types/validation.js'
 import '@testing-library/jest-dom'
 import { render } from '@testing-library/svelte'
 import { cosmiconfigSync } from 'cosmiconfig'
 import del from 'del'
+import { assert, StructError } from 'superstruct'
 
 import {
   generateComponents,
@@ -20,6 +22,15 @@ jest.mock('@svelte-system/docs', () => {
 })
 
 beforeAll(() => {
+  try {
+    assert(mockConfig, Config)
+  } catch (err) {
+    if (!(err instanceof StructError)) return console.error(err)
+    console.error('Mock configuration is invalid')
+    console.dir(err, { depth: null })
+    return
+  }
+
   generateComponents({
     outputPath: mockConfig.outputPath,
     theme: mockConfig.theme,

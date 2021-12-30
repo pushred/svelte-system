@@ -14,8 +14,13 @@ function cosmiconfigSync() {
             // colors
 
             colors: {
-              black: '#000',
-              white: '#fff',
+              text: '#000',
+              background: '#fff',
+              primary: '#111',
+              secondary: '#222',
+              accent: '#333',
+              highlight: '#444',
+              muted: '#555',
               gray: {
                 50: '#f7fafc',
                 900: '#171923',
@@ -99,7 +104,7 @@ function cosmiconfigSync() {
               overlay: 1300,
             },
 
-            // styles
+            // styles - not functional yet
 
             layerStyles: {
               panel: {
@@ -112,7 +117,7 @@ function cosmiconfigSync() {
 
             text: {
               body: {
-                color: 'black',
+                color: 'text',
                 fontFamily: 'body',
                 fontSize: 'md',
                 fontWeight: 'normal',
@@ -120,7 +125,7 @@ function cosmiconfigSync() {
                 lineHeight: 'body',
               },
               h1: {
-                color: 'black',
+                color: 'text',
                 fontFamily: 'body',
                 fontSize: 'lg',
                 fontWeight: 'bold',
