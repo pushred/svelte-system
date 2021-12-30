@@ -17,6 +17,10 @@ export const props = [
     scale: 'fontWeights',
   },
   {
+    name: 'letterSpacing',
+    scale: 'letterSpacings',
+  },
+  {
     name: 'lineHeight',
     scale: 'lineHeights',
   },

@@ -24,6 +24,7 @@ export const defaultTheme = {
     bold: 700,
     heading: 700,
   },
+  letterSpacings: ['-0.05em', '-0.025em', '0', '0.025em', '0.05em', '0.1em'],
   lineHeights: {
     body: 1.5,
     heading: 1.125,

@@ -53,6 +53,7 @@ function getUserConfig(options) {
       fonts: userTheme.fonts || defaultTheme.fonts,
       fontSizes: userTheme.fontSizes || defaultTheme.fontSizes,
       fontWeights: userTheme.fontWeights || defaultTheme.fontWeights,
+      letterSpacings: userTheme.letterSpacings || defaultTheme.letterSpacings,
       lineHeights: userTheme.lineHeights || defaultTheme.lineHeights,
       sizes: userTheme.sizes || defaultTheme.sizes,
       space: userTheme.space || defaultTheme.space,

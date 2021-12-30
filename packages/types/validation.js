@@ -7,6 +7,7 @@ import rgbaColorRegex from 'rgba-regex'
 
 import {
   array,
+  enums,
   integer,
   literal,
   number,
@@ -79,12 +80,15 @@ const LengthScale = union([
 
 export const Theme = type({
   colors: ColorsScale,
+
   fonts: type({
     body: optional(CssFontFamily),
     heading: optional(CssFontFamily),
     monospace: optional(CssFontFamily),
   }),
+
   fontSizes: LengthScale,
+
   fontWeights: union([
     type({
       body: optional(CssFontWeight),
@@ -94,6 +98,9 @@ export const Theme = type({
     array(number()),
     array(NumberString),
   ]),
+
+  letterSpacings: union([ScaleArray, ScaleObject]),
+
   lineHeights: union([
     type({
       body: optional(CssLineHeight),
@@ -102,11 +109,14 @@ export const Theme = type({
     array(number()),
     array(NumberString),
   ]),
+
   sizes: LengthScale,
   space: LengthScale,
   flexGrow: array(number()),
   flexShrink: array(number()),
   order: array(number()),
+
+  // TODO: add textStyles and layerStyles, if they can be supported
 })
 
 export const Config = object({
