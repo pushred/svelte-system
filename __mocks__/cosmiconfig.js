@@ -104,6 +104,19 @@ function cosmiconfigSync() {
               overlay: 1300,
             },
 
+            // components
+
+            components: {
+              Body: {
+                color: 'text',
+                fontFamily: 'body',
+                fontSize: 'md',
+                fontWeight: 'normal',
+                letterSpacing: 'normal',
+                lineHeight: 'body',
+              },
+            },
+
             // styles - not functional yet
 
             layerStyles: {

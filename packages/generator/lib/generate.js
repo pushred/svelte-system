@@ -141,10 +141,19 @@ export function generateComponents({ outputPath, theme }) {
 }
 
 /**
- * @param {{ outputPath: string }} options
+ * @param {{ outputPath: string, theme: Theme }} options
  */
-export function generateDerivedComponents({ outputPath }) {
-  derivedComponentsToGenerate.forEach((component) => {
+export function generateDerivedComponents({ outputPath, theme }) {
+  const derivedComponents = derivedComponentsToGenerate.concat(
+    Object.keys(theme.components || {}).map((name) => ({
+      name,
+      defaultProps: theme.components[name],
+      filename: `${name}.svelte`,
+      sourceComponent: 'Box',
+    }))
+  )
+
+  derivedComponents.forEach((component) => {
     /** @type string[] */
     const exports = []
 
@@ -193,7 +202,7 @@ export function generateDerivedComponents({ outputPath }) {
   })
 
   // return config for logging purposes
-  return derivedComponentsToGenerate
+  return derivedComponents
 }
 
 /** @param {{ componentsPath: string, theme: Theme }} options */

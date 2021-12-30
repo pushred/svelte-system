@@ -50,6 +50,7 @@ function getUserConfig(options) {
     ...userConfig,
     theme: {
       colors: userTheme.colors || defaultTheme.colors,
+      components: userTheme.components,
       fonts: userTheme.fonts || defaultTheme.fonts,
       fontSizes: userTheme.fontSizes || defaultTheme.fontSizes,
       fontWeights: userTheme.fontWeights || defaultTheme.fontWeights,
@@ -102,6 +103,7 @@ cli
 
     const derivedComponents = generateDerivedComponents({
       outputPath,
+      theme: userConfig.theme,
     })
 
     const componentCount = components.length + derivedComponents.length

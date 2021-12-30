@@ -37,6 +37,7 @@ beforeAll(() => {
   })
   generateDerivedComponents({
     outputPath: mockConfig.outputPath,
+    theme: mockConfig.theme,
   })
 })
 
@@ -65,6 +66,20 @@ describe('component generation', () => {
 
     const el = getByTestId('a')
     expect(el).toHaveClass('d-flex')
+    expect(el).toHaveClass('mb-1')
+  })
+
+  test('specified components', async () => {
+    const Body = await import(join(mockConfig.outputPath, 'Body.svelte'))
+
+    const { getByTestId } = render(Body, {
+      marginBottom: '1',
+      testId: 'a',
+    })
+
+    const el = getByTestId('a')
+    expect(el).toHaveClass('color-text')
+    expect(el).toHaveClass('font-family-body')
     expect(el).toHaveClass('mb-1')
   })
 })

@@ -1,3 +1,5 @@
+import { propNames } from '@svelte-system/props'
+
 import hexColorRegex from 'hex-color-regex'
 import hexaColorRegex from 'hexa-color-regex'
 import hslColorRegex from 'hsl-regex'
@@ -79,6 +81,8 @@ const LengthScale = union([
 ])
 
 export const Theme = type({
+  // following are *user* optional, but required when merged with default theme
+
   colors: ColorsScale,
 
   fonts: type({
@@ -112,9 +116,19 @@ export const Theme = type({
 
   sizes: LengthScale,
   space: LengthScale,
-  flexGrow: array(number()),
-  flexShrink: array(number()),
-  order: array(number()),
+
+  // optional configs
+
+  flexGrow: optional(array(number())),
+  flexShrink: optional(array(number())),
+  order: optional(array(number())),
+
+  components: optional(
+    record(
+      pattern(string(), /[A-Z][A-Za-z0-9]*/),
+      record(enums(propNames), string())
+    )
+  ),
 
   // TODO: add textStyles and layerStyles, if they can be supported
 })
@@ -123,4 +137,5 @@ export const Config = object({
   componentsPath: optional(string()),
   docsPath: optional(string()),
   theme: Theme,
+  outputPath: optional(string()),
 })
