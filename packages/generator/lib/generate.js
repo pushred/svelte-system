@@ -8,15 +8,8 @@ import * as svelte from 'svelte/compiler'
 // TODO: dynamically import when we can use native ESM in Jest (should be optional peer dep)
 import prettier from 'prettier'
 
-import { Cache } from './cache.js'
-import { props as attributeProps } from './props/attributes.js'
-import { props as colorProps } from './props/colors.js'
-import { props as flexProps } from './props/flex.js'
-import { props as layoutProps } from './props/layout.js'
-import { props as sizesProps } from './props/sizes.js'
-import { props as spaceProps } from './props/space.js'
-import { props as typographyProps } from './props/typography.js'
-
+import { generatedComponentsCache } from './caches.js'
+import { propsByCategory, propsByName } from './props/index.js'
 import { getScaleStyles, getValueStyles } from './utils/index.js'
 
 /**
@@ -28,37 +21,6 @@ import { getScaleStyles, getValueStyles } from './utils/index.js'
  * @typedef { import('@svelte-system/types').ThemeScale } ThemeScale
  * @typedef {{ [key: string]: Prop }} PropsByName
  */
-
-const generatedComponentsCache = new Cache()
-
-const props = [
-  ...attributeProps,
-  ...colorProps,
-  ...flexProps,
-  ...layoutProps,
-  ...sizesProps,
-  ...spaceProps,
-  ...typographyProps,
-]
-
-const propsByCategory = {
-  attributes: attributeProps,
-  colors: colorProps,
-  flex: flexProps,
-  layout: layoutProps,
-  sizes: sizesProps,
-  space: spaceProps,
-  typography: typographyProps,
-}
-
-/** @type {PropsByName} */
-const initialPropsByName = {}
-
-/** @type {PropsByName} */
-const propsByName = props.reduce((accumulator, prop) => {
-  accumulator[prop.name] = prop
-  return accumulator
-}, initialPropsByName)
 
 /** @type {ComponentSpec[]} */
 const componentsToGenerate = [
@@ -77,6 +39,14 @@ const derivedComponentsToGenerate = [
     },
     filename: 'Flex.svelte',
     name: 'Flex',
+    sourceComponent: 'Box',
+  },
+  {
+    defaultProps: {
+      as: 'p',
+    },
+    filename: 'Text.svelte',
+    name: 'Text',
     sourceComponent: 'Box',
   },
 ]
@@ -113,6 +83,7 @@ export function generateComponents({ outputPath, theme }) {
             prop,
             scale: theme[prop.scale],
           })
+
           classes.push(...generated.classes)
           styles.push(...generated.styles)
         }
@@ -124,6 +95,7 @@ export function generateComponents({ outputPath, theme }) {
             prop,
             values: prop.values,
           })
+
           classes.push(...generated.classes)
           styles.push(...generated.styles)
         }

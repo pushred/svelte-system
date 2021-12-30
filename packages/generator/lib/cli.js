@@ -15,7 +15,7 @@ import {
   generateDerivedComponents,
 } from './generate.js'
 
-import { defaultTheme } from './theme.js'
+import { defaultTheme } from './defaultTheme.js'
 
 /**
  * @typedef { import('@svelte-system/types').CliOptions } CliOptions

@@ -26,11 +26,14 @@ function cosmiconfigSync() {
 
             fonts: {
               body: 'sans-serif',
+              heading: 'sans-serif',
             },
 
             fontSizes: {
               xs: '0.75rem',
               sm: '0.875rem',
+              md: '1rem',
+              lg: '1.5rem',
             },
 
             fontWeights: {
@@ -41,7 +44,8 @@ function cosmiconfigSync() {
             lineHeights: {
               normal: 'normal',
               none: 1,
-              shorter: 1.25,
+              heading: 1.125,
+              body: 1.5,
             },
 
             letterSpacings: {
@@ -93,6 +97,35 @@ function cosmiconfigSync() {
             zIndicies: {
               base: 0,
               overlay: 1300,
+            },
+
+            // styles
+
+            layerStyles: {
+              panel: {
+                backgroundColor: 'gray.50',
+                padding: 1,
+                width: 'full',
+                zIndex: 'base',
+              },
+            },
+
+            text: {
+              body: {
+                color: 'black',
+                fontFamily: 'body',
+                fontSize: 'md',
+                fontWeight: 'normal',
+                letterSpacing: 'normal',
+                lineHeight: 'body',
+              },
+              h1: {
+                color: 'black',
+                fontFamily: 'body',
+                fontSize: 'lg',
+                fontWeight: 'bold',
+                letterSpacing: 'tight',
+              },
             },
           },
         },

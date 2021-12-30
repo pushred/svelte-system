@@ -22,3 +22,5 @@ export class Cache {
     this.cache[key] = value
   }
 }
+
+export const generatedComponentsCache = new Cache()
