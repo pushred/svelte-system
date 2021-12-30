@@ -14,6 +14,7 @@
   },
   "dependencies": {
     "@svelte-system/docs": "workspace:*",
+    "@svelte-system/props": "workspace:*",
     "@svelte-system/types": "workspace:*",
     "chalk": "^4.1.2",
     "cosmiconfig": "^7.0.1",

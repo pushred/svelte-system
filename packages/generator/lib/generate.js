@@ -1,6 +1,7 @@
 import { readdirSync, readFileSync, writeFileSync } from 'fs'
 import { basename, join } from 'path'
 
+import { propsByCategory, propsByName } from '@svelte-system/props'
 import makeDir from 'make-dir'
 import * as svelte from 'svelte/compiler'
 
@@ -9,7 +10,6 @@ import * as svelte from 'svelte/compiler'
 import prettier from 'prettier'
 
 import { generatedComponentsCache } from './caches.js'
-import { propsByCategory, propsByName } from './props/index.js'
 import { getScaleStyles, getValueStyles } from './utils/index.js'
 
 /**

@@ -1,0 +1,13 @@
+{
+  "name": "@svelte-system/props",
+  "type": "module",
+  "version": "0.0.1",
+  "description": "Shared prop config for SvelteSystem",
+  "author": "Eric Casthart <eric@pushred.co> (https://pushred.co)",
+  "license": "MIT",
+  "files": [
+    "*.js",
+    "*.ts"
+  ],
+  "main": "./index.js"
+}

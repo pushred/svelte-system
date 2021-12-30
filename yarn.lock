@@ -1663,6 +1663,7 @@ __metadata:
   resolution: "@svelte-system/generator@workspace:packages/generator"
   dependencies:
     "@svelte-system/docs": "workspace:*"
+    "@svelte-system/props": "workspace:*"
     "@svelte-system/types": "workspace:*"
     chalk: ^4.1.2
     cosmiconfig: ^7.0.1
@@ -1684,10 +1685,17 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@svelte-system/props@workspace:*, @svelte-system/props@workspace:packages/props":
+  version: 0.0.0-use.local
+  resolution: "@svelte-system/props@workspace:packages/props"
+  languageName: unknown
+  linkType: soft
+
 "@svelte-system/types@workspace:*, @svelte-system/types@workspace:packages/types":
   version: 0.0.0-use.local
   resolution: "@svelte-system/types@workspace:packages/types"
   dependencies:
+    "@svelte-system/props": "workspace:*"
     superstruct: ^0.15.3
   languageName: unknown
   linkType: soft
