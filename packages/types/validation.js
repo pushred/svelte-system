@@ -8,6 +8,7 @@ import rgbaColorRegex from 'rgba-regex'
 import {
   array,
   integer,
+  literal,
   number,
   object,
   optional,
@@ -39,7 +40,7 @@ const CssColor = union([
 const CssLength = pattern(
   string(),
   // values from https://developer.mozilla.org/en-US/docs/Web/CSS/length
-  /[0-9]+(cap|ch|em|ex|ic|lh|rem|rlh|vh|vw|vi|vb|vmin|vmax|px|cm|mm|Q|in|pc|pt)/
+  /-?[0-9.]+(cap|ch|em|ex|ic|lh|rem|rlh|vh|vw|vi|vb|vmin|vmax|px|cm|mm|Q|in|pc|pt|%)/
 )
 
 // TODO: define pattern
@@ -59,8 +60,13 @@ const ColorsScale = type({
   muted: CssColor,
 })
 
-export const ScaleArray = array(CssLength)
-export const ScaleObject = record(string(), CssLength)
+export const ScaleArray = array(union([CssLength, literal(0), literal('0')]))
+
+export const ScaleObject = record(
+  string(),
+  union([CssLength, literal(0), literal('0')])
+)
+
 export const UnitlessScaleArray = array(number())
 export const UnitlessScaleObject = record(string(), number())
 
