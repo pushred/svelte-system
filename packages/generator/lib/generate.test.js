@@ -44,6 +44,29 @@ beforeAll(() => {
 afterAll(async () => del(mockConfig.outputPath))
 
 describe('component generation', () => {
+  test('default tag', async () => {
+    const Box = await import(join(mockConfig.outputPath, 'Box.svelte'))
+
+    const { getByTestId } = render(Box, {
+      testId: 'a',
+    })
+
+    const el = getByTestId('a')
+    expect(el.tagName).toEqual('DIV')
+  })
+
+  test('tag specified by `as` prop', async () => {
+    const Box = await import(join(mockConfig.outputPath, 'Box.svelte'))
+
+    const { getByTestId } = render(Box, {
+      as: 'p',
+      testId: 'a',
+    })
+
+    const el = getByTestId('a')
+    expect(el.tagName).toEqual('P')
+  })
+
   test('space styles', async () => {
     const Box = await import(join(mockConfig.outputPath, 'Box.svelte'))
 

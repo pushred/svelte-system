@@ -22,6 +22,8 @@ import { getScaleStyles, getValueStyles } from './utils/index.js'
  * @typedef {{ [key: string]: Prop }} PropsByName
  */
 
+const isTest = process.env.NODE_ENV === 'test'
+
 /** @type {ComponentSpec[]} */
 const componentsToGenerate = [
   {
@@ -50,6 +52,89 @@ const derivedComponentsToGenerate = [
     sourceComponent: 'Box',
   },
 ]
+
+const voidElementTags = ['img', 'input']
+
+// static list temporary till https://github.com/sveltejs/svelte/pull/6898
+const tags = [
+  ...voidElementTags,
+  'a',
+  'abbr',
+  'blockquote',
+  'button',
+  'code',
+  'del',
+  'div',
+  'dfn',
+  'em',
+  'figcaption',
+  'footer',
+  'h1',
+  'h2',
+  'h3',
+  'h4',
+  'h5',
+  'h6',
+  'header',
+  'ins',
+  'kbd',
+  'label',
+  'li',
+  'main',
+  'mark',
+  'nav',
+  'ol',
+  'p',
+  'pre',
+  'q',
+  'section',
+  'select',
+  'small',
+  'span',
+  'strong',
+  'table',
+  'td',
+  'time',
+  'tr',
+  'ul',
+  'var',
+  'video',
+]
+
+/**
+ * @param {{
+ *  attributes: string[],
+ *  index: number,
+ *  isLast: boolean,
+ *  tagName: string
+ * }} options
+ */
+function generateTags({ attributes, index, isLast, tagName }) {
+  let output = ''
+
+  if (index === 0) {
+    output += `{#if as === '${tagName}'}\n`
+  } else {
+    output += `{:else if as === '${tagName}'}\n`
+  }
+
+  if (voidElementTags.includes(tagName)) {
+    output += `<${tagName}
+      class={className}
+      ${attributes.join(' ')}
+    />`
+  } else {
+    output += `<${tagName}
+      class={className}
+      ${attributes.join(' ')}
+    >
+      <slot />
+    </${tagName}>`
+  }
+
+  if (isLast) output += '{/if}'
+  return output
+}
 
 /**
  * @param {{ outputPath: string, theme: Theme }} options
@@ -114,15 +199,33 @@ export function generateComponents({ outputPath, theme }) {
 
     generatedComponentsCache.set(component.name, { generatedProps })
 
+    // handle babel vs. rollup/vite ESM difference
+    const clsxImport = isTest
+      ? `import * as clsx from 'clsx'`
+      : `import clsx from 'clsx'`
+
+    // peer dependency on clsx temporary till https://github.com/sveltejs/svelte/pull/6898
     const template = `
       <script>
+        ${clsxImport}
+
+        export let as = 'div'
         export let testId = undefined
         ${exports.join('\n')}
+
+        const className = clsx({ ${classes.join(', ')} })
       </script>
 
-      <div ${classes.join(' ')} data-testid={testId}>
-        <slot />
-      </div>
+      ${tags
+        .map((tagName, index) =>
+          generateTags({
+            index,
+            isLast: index === tags.length - 1,
+            tagName,
+            attributes: ['data-testid={testId}'],
+          })
+        )
+        .join('\n')}
 
       <style>
         ${styles.join('\n')}

@@ -5,6 +5,9 @@
 /** @type { Prop[] } */
 export const props = [
   {
+    name: 'as',
+  },
+  {
     name: 'testId',
   },
 ]

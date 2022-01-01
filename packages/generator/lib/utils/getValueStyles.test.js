@@ -9,8 +9,8 @@ test('generates a class/style for each value', () => {
   })
 
   expect(results.classes).toEqual([
-    "class:text-align-left={textAlign === 'left'}",
-    "class:text-align-right={textAlign === 'right'}",
+    "'text-align-left': textAlign === 'left'",
+    "'text-align-right': textAlign === 'right'",
   ])
 
   expect(results.styles).toEqual([
@@ -29,8 +29,8 @@ test('prop alias', () => {
   })
 
   expect(results.classes).toEqual([
-    "class:align-start={alignItems === 'start' || align === 'start'}",
-    "class:align-end={alignItems === 'end' || align === 'end'}",
+    "'align-start': alignItems === 'start' || align === 'start'",
+    "'align-end': alignItems === 'end' || align === 'end'",
   ])
 
   expect(results.styles).toEqual([

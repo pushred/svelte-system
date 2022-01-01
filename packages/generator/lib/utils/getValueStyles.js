@@ -27,7 +27,7 @@ export function getValueStyles({ prop, values }) {
 
     const className = kebabCase(`${classPrefix}-${value}`)
 
-    classes.push(`class:${className}={${conditions.join(' || ')}}`)
+    classes.push(`'${className}': ${conditions.join(' || ')}`)
     styles.push(`.${className} { ${cssProp}: ${value} }`)
   })
 

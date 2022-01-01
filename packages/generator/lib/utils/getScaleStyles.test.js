@@ -9,8 +9,8 @@ test('array scale', () => {
   })
 
   expect(result.classes).toEqual([
-    "class:gap-0={gap === '0'}",
-    "class:gap-1={gap === '1'}",
+    "'gap-0': gap === '0'",
+    "'gap-1': gap === '1'",
   ])
 
   expect(result.styles).toEqual(['.gap-0 { gap: 0 }', '.gap-1 { gap: 1px }'])
@@ -30,8 +30,8 @@ test('array scale with aliases', () => {
   })
 
   expect(result.classes).toEqual([
-    "class:gap-0={gap === '0' || gap === 'sm'}",
-    "class:gap-1={gap === '1' || gap === 'lg'}",
+    "'gap-0': gap === '0' || gap === 'sm'",
+    "'gap-1': gap === '1' || gap === 'lg'",
   ])
 
   expect(result.styles).toEqual(['.gap-0 { gap: 0 }', '.gap-1 { gap: 1px }'])
@@ -47,8 +47,8 @@ test('prop aliases', () => {
   })
 
   expect(result.classes).toEqual([
-    "class:w-0={width === '0' || w === '0'}",
-    "class:w-1={width === '1' || w === '1'}",
+    "'w-0': width === '0' || w === '0'",
+    "'w-1': width === '1' || w === '1'",
   ])
 
   expect(result.styles).toEqual(['.w-0 { width: 0 }', '.w-1 { width: 4px }'])
@@ -69,8 +69,8 @@ test('array scale with aliases and prop aliases', () => {
   })
 
   expect(result.classes).toEqual([
-    "class:w-0={width === '0' || width === 'sm' || w === '0' || w === 'sm'}",
-    "class:w-1={width === '1' || width === 'lg' || w === '1' || w === 'lg'}",
+    "'w-0': width === '0' || width === 'sm' || w === '0' || w === 'sm'",
+    "'w-1': width === '1' || width === 'lg' || w === '1' || w === 'lg'",
   ])
 
   expect(result.styles).toEqual(['.w-0 { width: 0 }', '.w-1 { width: 4px }'])
@@ -88,8 +88,8 @@ test('object scale', () => {
   })
 
   expect(result.classes).toEqual([
-    "class:color-text={color === 'text'}",
-    "class:color-background={color === 'background'}",
+    "'color-text': color === 'text'",
+    "'color-background': color === 'background'",
   ])
 
   expect(result.styles).toEqual([
@@ -109,8 +109,8 @@ test('nested array scale', () => {
   })
 
   expect(result.classes).toEqual([
-    "class:color-gray-0={color === 'gray.0'}",
-    "class:color-gray-1={color === 'gray.1'}",
+    "'color-gray-0': color === 'gray.0'",
+    "'color-gray-1': color === 'gray.1'",
   ])
 
   expect(result.styles).toEqual([
@@ -139,10 +139,10 @@ test('nested object scale', () => {
   })
 
   expect(result.classes).toEqual([
-    "class:color-modes-light-text={color === 'modes.light.text'}",
-    "class:color-modes-light-background={color === 'modes.light.background'}",
-    "class:color-modes-dark-text={color === 'modes.dark.text'}",
-    "class:color-modes-dark-background={color === 'modes.dark.background'}",
+    "'color-modes-light-text': color === 'modes.light.text'",
+    "'color-modes-light-background': color === 'modes.light.background'",
+    "'color-modes-dark-text': color === 'modes.dark.text'",
+    "'color-modes-dark-background': color === 'modes.dark.background'",
   ])
 
   expect(result.styles).toEqual([
@@ -178,10 +178,10 @@ test('deeply nested array scale', () => {
   })
 
   expect(result.classes).toEqual([
-    "class:color-modes-light-gray-0={color === 'modes.light.gray.0' || color === 'modes.light.gray.a'}",
-    "class:color-modes-light-gray-1={color === 'modes.light.gray.1' || color === 'modes.light.gray.b'}",
-    "class:color-modes-dark-gray-0={color === 'modes.dark.gray.0' || color === 'modes.dark.gray.a'}",
-    "class:color-modes-dark-gray-1={color === 'modes.dark.gray.1' || color === 'modes.dark.gray.b'}",
+    "'color-modes-light-gray-0': color === 'modes.light.gray.0' || color === 'modes.light.gray.a'",
+    "'color-modes-light-gray-1': color === 'modes.light.gray.1' || color === 'modes.light.gray.b'",
+    "'color-modes-dark-gray-0': color === 'modes.dark.gray.0' || color === 'modes.dark.gray.a'",
+    "'color-modes-dark-gray-1': color === 'modes.dark.gray.1' || color === 'modes.dark.gray.b'",
   ])
 
   expect(result.styles).toEqual([
@@ -214,8 +214,8 @@ test('deeply nested object scale', () => {
   })
 
   expect(result.classes).toEqual([
-    "class:color-modes-light-gray-50={color === 'modes.light.gray.50'}",
-    "class:color-modes-dark-gray-50={color === 'modes.dark.gray.50'}",
+    "'color-modes-light-gray-50': color === 'modes.light.gray.50'",
+    "'color-modes-dark-gray-50': color === 'modes.dark.gray.50'",
   ])
 
   expect(result.styles).toEqual([

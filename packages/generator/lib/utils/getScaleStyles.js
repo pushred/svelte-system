@@ -88,7 +88,7 @@ export function getScaleStyles({
     const { classKey, conditions } = classToCreate
     const className = kebabCase(`${classPrefix}-${classKey}`)
 
-    classes.push(`class:${className}={${conditions.join(' || ')}}`)
+    classes.push(`'${className}': ${conditions.join(' || ')}`)
     styles.push(`.${className} { ${cssProp}: ${value} }`)
   }
 
