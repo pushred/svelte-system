@@ -163,7 +163,7 @@ export const Theme = type({
   components: optional(
     record(
       pattern(string(), /[A-Z][A-Za-z0-9]*/),
-      record(enums(propNames), string())
+      record(enums(propNames), union([number(), string()]))
     )
   ),
 
