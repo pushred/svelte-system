@@ -151,6 +151,7 @@ export const Theme = type({
     array(NumberString),
   ]),
 
+  radii: LengthScale,
   sizes: LengthScale,
   space: LengthScale,
 

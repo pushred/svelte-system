@@ -22,6 +22,7 @@ type PropCategory =
   | 'colors'
   | 'flex'
   | 'layout'
+  | 'radii'
   | 'sizes'
   | 'space'
   | 'typography'

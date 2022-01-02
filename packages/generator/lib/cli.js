@@ -57,6 +57,7 @@ function getUserConfig(options) {
       fontWeights: userTheme.fontWeights || defaultTheme.fontWeights,
       letterSpacings: userTheme.letterSpacings || defaultTheme.letterSpacings,
       lineHeights: userTheme.lineHeights || defaultTheme.lineHeights,
+      radii: userTheme.radii || defaultTheme.radii,
       sizes: userTheme.sizes || defaultTheme.sizes,
       space: userTheme.space || defaultTheme.space,
       flexGrow: userTheme.flexGrow || defaultTheme.flexGrow,

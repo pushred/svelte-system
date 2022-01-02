@@ -3,6 +3,7 @@ import { props as borders } from './lib/borders.js'
 import { props as colors } from './lib/colors.js'
 import { props as flex } from './lib/flex.js'
 import { props as layout } from './lib/layout.js'
+import { props as radii } from './lib/radii.js'
 import { props as sizes } from './lib/sizes.js'
 import { props as space } from './lib/space.js'
 import { props as typography } from './lib/typography.js'
@@ -13,6 +14,7 @@ export const props = [
   ...colors,
   ...flex,
   ...layout,
+  ...radii,
   ...sizes,
   ...space,
   ...typography,
@@ -31,6 +33,7 @@ export const propsByCategory = {
   colors,
   flex,
   layout,
+  radii,
   sizes,
   space,
   typography,

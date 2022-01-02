@@ -30,6 +30,16 @@ export const defaultTheme = {
     body: 1.5,
     heading: 1.125,
   },
+  radii: [
+    0,
+    '0.125rem',
+    '0.25rem',
+    '0.375rem',
+    '0.5rem',
+    '0.75rem',
+    '1rem',
+    '1.5rem',
+  ],
   sizes: [0, 4, 8, 16, 32, 64, 128, 256, 512],
   space: {
     // Tailwind default spacing scale
