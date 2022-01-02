@@ -84,7 +84,7 @@ export function getScaleStyles({
   }
 
   for (const [scaleValue, classToCreate] of Object.entries(classesToCreate)) {
-    const value = transformValue(scaleValue)
+    const value = transformValue(scaleValue, prop.transform)
     const { classKey, conditions } = classToCreate
     const className = kebabCase(`${classPrefix}-${classKey}`)
 

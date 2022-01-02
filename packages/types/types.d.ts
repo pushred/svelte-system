@@ -14,8 +14,11 @@ type ObjectScale = {
   [key: string]: number | string | ThemeArrayScale | ThemeObjectScale
 }
 
+type ValueTransforms = 'pixels' | 'string'
+
 type PropCategory =
   | 'attributes'
+  | 'borders'
   | 'colors'
   | 'flex'
   | 'layout'
@@ -53,5 +56,6 @@ type Prop = {
   alias?: string
   name: string
   scale?: ThemeScaleName
+  transform?: ValueTransforms
   values?: string[]
 }

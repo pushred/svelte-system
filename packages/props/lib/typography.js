@@ -15,6 +15,7 @@ export const props = [
   {
     name: 'fontWeight',
     scale: 'fontWeights',
+    transform: 'string',
   },
   {
     name: 'letterSpacing',
@@ -23,6 +24,7 @@ export const props = [
   {
     name: 'lineHeight',
     scale: 'lineHeights',
+    transform: 'string',
   },
   {
     name: 'textAlign',

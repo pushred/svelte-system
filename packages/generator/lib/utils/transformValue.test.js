@@ -12,6 +12,10 @@ test('string integer value', () => {
   expect(transformValue('1')).toEqual('1px')
 })
 
+test('unitless integer value', () => {
+  expect(transformValue(400, 'string')).toEqual('400')
+})
+
 test('decimal value', () => {
   expect(transformValue(1.5)).toEqual('1.5px')
 })
