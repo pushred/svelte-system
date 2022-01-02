@@ -13,6 +13,7 @@
   "include": [
     "packages/docs/**/*.js",
     "packages/generator/lib/**/*",
+    "packages/props/**/*.js",
     "packages/types/*.(js|ts)"
   ]
 }
