@@ -1,4 +1,5 @@
 export const defaultTheme = {
+  borders: ['none', '1px solid'],
   colors: {
     // from https://clrs.cc
     background: '#fff',

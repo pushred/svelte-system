@@ -29,7 +29,15 @@ const componentsToGenerate = [
   {
     filename: 'Box.svelte',
     name: 'Box',
-    props: ['colors', 'flex', 'layout', 'sizes', 'space', 'typography'],
+    props: [
+      'borders',
+      'colors',
+      'flex',
+      'layout',
+      'sizes',
+      'space',
+      'typography',
+    ],
   },
 ]
 

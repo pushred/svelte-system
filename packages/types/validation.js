@@ -22,7 +22,34 @@ import {
   union,
 } from 'superstruct'
 
+const BorderShorthand = union([
+  literal('none'),
+  pattern(
+    string(),
+    /[0-9]+px (dashed|dotted|double|groove|inset|outset|ridge|solid)/
+  ),
+])
+
+const BorderStyle = enums([
+  'dashed',
+  'dotted',
+  'double',
+  'groove',
+  'inset',
+  'outset',
+  'ridge',
+  'solid',
+])
+
 const NumberString = pattern(string(), /[A-Z0-9]+/)
+const PixelString = pattern(string(), /[0-9]+px/)
+
+const BorderShorthandScaleArray = array(BorderShorthand)
+const BorderShorthandScaleObject = record(string(), BorderShorthand)
+const BorderStyleScaleArray = array(BorderStyle)
+const BorderStyleScaleObject = record(string(), BorderStyle)
+const BorderWidthScaleArray = array(union([number(), PixelString]))
+const BorderWidthScaleObject = record(string(), union([number(), PixelString]))
 
 const CssHexColor = pattern(string(), hexColorRegex({ strict: true }))
 const CssHexAlphaColor = pattern(string(), hexaColorRegex({ strict: true }))
@@ -81,7 +108,17 @@ const LengthScale = union([
 ])
 
 export const Theme = type({
-  // following are *user* optional, but required when merged with default theme
+  // many scales are *user* optional, but effectively required when merged with default theme
+
+  borders: union([BorderShorthandScaleArray, BorderShorthandScaleObject]),
+
+  borderStyles: optional(
+    union([BorderStyleScaleArray, BorderStyleScaleObject])
+  ),
+
+  borderWidths: optional(
+    union([BorderWidthScaleArray, BorderWidthScaleObject])
+  ),
 
   colors: ColorsScale,
 

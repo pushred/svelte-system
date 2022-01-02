@@ -1,4 +1,5 @@
 import { props as attributes } from './lib/attributes.js'
+import { props as borders } from './lib/borders.js'
 import { props as colors } from './lib/colors.js'
 import { props as flex } from './lib/flex.js'
 import { props as layout } from './lib/layout.js'
@@ -8,6 +9,7 @@ import { props as typography } from './lib/typography.js'
 
 export const props = [
   ...attributes,
+  ...borders,
   ...colors,
   ...flex,
   ...layout,
@@ -25,6 +27,7 @@ props.forEach((prop) => {
 
 export const propsByCategory = {
   attributes,
+  borders,
   colors,
   flex,
   layout,

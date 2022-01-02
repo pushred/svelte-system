@@ -11,6 +11,8 @@ function cosmiconfigSync() {
             `test-build-${randomBytes(5).toString('hex')}`
           ),
           theme: {
+            borders: ['none', '1px solid'],
+
             // colors
 
             colors: {

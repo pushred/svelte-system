@@ -49,6 +49,7 @@ function getUserConfig(options) {
   const mergedConfig = {
     ...userConfig,
     theme: {
+      borders: userTheme.borders || defaultTheme.borders,
       colors: userTheme.colors || defaultTheme.colors,
       components: userTheme.components,
       fonts: userTheme.fonts || defaultTheme.fonts,
