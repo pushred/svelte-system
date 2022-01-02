@@ -81,13 +81,13 @@ const CssFontWeight = union([pattern(string(), /[0-9]+/), integer()])
 
 // TODO: type nested scales, esp. modes
 const ColorsScale = type({
-  text: CssColor,
-  background: CssColor,
-  primary: CssColor,
-  secondary: CssColor,
-  accent: CssColor,
-  highlight: CssColor,
-  muted: CssColor,
+  text: optional(CssColor),
+  background: optional(CssColor),
+  primary: optional(CssColor),
+  secondary: optional(CssColor),
+  accent: optional(CssColor),
+  highlight: optional(CssColor),
+  muted: optional(CssColor),
 })
 
 export const ScaleArray = array(union([CssLength, literal(0), literal('0')]))
