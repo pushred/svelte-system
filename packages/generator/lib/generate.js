@@ -10,6 +10,7 @@ import * as svelte from 'svelte/compiler'
 import prettier from 'prettier'
 
 import { generatedComponentsCache } from './caches.js'
+import { htmlTags, voidHtmlElementTags } from './consts.js'
 import { getScaleStyles, getValueStyles } from './utils/index.js'
 
 /**
@@ -62,54 +63,6 @@ const derivedComponentsToGenerate = [
   },
 ]
 
-const voidElementTags = ['img', 'input']
-
-// static list temporary till https://github.com/sveltejs/svelte/pull/6898
-const tags = [
-  ...voidElementTags,
-  'a',
-  'abbr',
-  'blockquote',
-  'button',
-  'code',
-  'del',
-  'div',
-  'dfn',
-  'em',
-  'figcaption',
-  'footer',
-  'h1',
-  'h2',
-  'h3',
-  'h4',
-  'h5',
-  'h6',
-  'header',
-  'ins',
-  'kbd',
-  'label',
-  'li',
-  'main',
-  'mark',
-  'nav',
-  'ol',
-  'p',
-  'pre',
-  'q',
-  'section',
-  'select',
-  'small',
-  'span',
-  'strong',
-  'table',
-  'td',
-  'time',
-  'tr',
-  'ul',
-  'var',
-  'video',
-]
-
 /**
  * @param {{
  *  attributes: string[],
@@ -127,7 +80,7 @@ function generateTags({ attributes, index, isLast, tagName }) {
     output += `{:else if as === '${tagName}'}\n`
   }
 
-  if (voidElementTags.includes(tagName)) {
+  if (voidHtmlElementTags.includes(tagName)) {
     output += `<${tagName}
       class={className}
       ${attributes.join(' ')}
@@ -225,13 +178,13 @@ export function generateComponents({ outputPath, theme }) {
         const className = clsx({ ${classes.join(', ')} })
       </script>
 
-      ${tags
+      ${htmlTags
         .map((tagName, index) =>
           generateTags({
             index,
-            isLast: index === tags.length - 1,
+            isLast: index === htmlTags.length - 1,
             tagName,
-            attributes: ['data-testid={testId}'],
+            attributes: ['data-testid={testId}', '{...$$restProps}'],
           })
         )
         .join('\n')}
