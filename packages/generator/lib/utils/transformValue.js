@@ -9,7 +9,9 @@
 export function transformValue(value, transform = 'pixels') {
   if (transform === 'string') return value.toString()
 
-  const hasUnit = typeof value === 'string' && /[a-z]/.test(value)
+  const hasUnit =
+    typeof value === 'string' && (value.includes('%') || /[a-z]/.test(value))
+
   if (hasUnit) return value
 
   if (typeof value === 'number' && transform === 'pixels') {
