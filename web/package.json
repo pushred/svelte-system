@@ -5,6 +5,7 @@
   "scripts": {
     "generate-components": "svelte-system generate-components",
     "generate-docs": "svelte-system generate-docs ./src/components",
+    "generate-stylesheet": "svelte-system generate-stylesheet --output ./src/system.css",
     "dev": "svelte-kit dev",
     "build": "svelte-kit build",
     "preview": "svelte-kit preview"

@@ -174,6 +174,7 @@ export const Theme = type({
 export const Config = object({
   componentsPath: optional(string()),
   docsPath: optional(string()),
+  stylesheetPath: optional(string()),
   theme: Theme,
   outputPath: optional(string()),
 })

@@ -30,6 +30,7 @@ type PropCategory =
 type CliOptions = {
   config: string
   componentsPath: string
+  stylesheetPath: string
   output: string
 }
 

@@ -15,6 +15,8 @@ import {
   generateDerivedComponents,
 } from './generate.js'
 
+import { generateStylesheet } from './generators/index.js'
+
 import { defaultTheme } from './defaultTheme.js'
 
 /**
@@ -140,6 +142,27 @@ cli
     console.log(
       chalk.green('✔'),
       `Component docs generated and saved to ${relativeOutputPath}`
+    )
+  })
+
+cli
+  .command('generate-stylesheet')
+  .option('-o --output', 'Path to output generated stylesheet')
+  .action((options) => {
+    const userConfig = getUserConfig(options)
+    if (!userConfig) return
+
+    const outputPath = options.output || userConfig.stylesheetPath
+    const relativeOutputPath = relative(resolve('..'), outputPath)
+
+    generateStylesheet({
+      outputPath,
+      theme: userConfig.theme,
+    })
+
+    console.log(
+      chalk.green('✔'),
+      `Stylesheet generated and saved to ${relativeOutputPath}`
     )
   })
 
