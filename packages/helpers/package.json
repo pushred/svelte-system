@@ -1,0 +1,21 @@
+{
+  "name": "@svelte-system/helpers",
+  "type": "module",
+  "version": "0.0.1",
+  "description": "Helper functions for SvelteSystem-generated components",
+  "author": "Eric Casthart <eric@pushred.co> (https://pushred.co)",
+  "license": "MIT",
+  "files": [
+    "*.js",
+    "*.ts"
+  ],
+  "main": "./index.js",
+  "scripts": {
+    "prepack": "./scripts/generateGetClass.js"
+  },
+  "dependencies": {
+    "@svelte-system/props": "workspace:*",
+    "clsx": "^1.1.1",
+    "lodash.kebabcase": "^4.1.1"
+  }
+}
