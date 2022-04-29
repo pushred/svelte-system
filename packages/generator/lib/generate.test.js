@@ -7,11 +7,7 @@ import { cosmiconfigSync } from 'cosmiconfig'
 import del from 'del'
 import { assert, StructError } from 'superstruct'
 
-import {
-  generateComponents,
-  generateDerivedComponents,
-  getComponentDocs,
-} from './generate.js'
+import { generateComponents, getComponentDocs } from './generate.js'
 
 const mockConfig = cosmiconfigSync().search().config
 
@@ -32,10 +28,6 @@ beforeAll(() => {
   }
 
   generateComponents({
-    outputPath: mockConfig.outputPath,
-    theme: mockConfig.theme,
-  })
-  generateDerivedComponents({
     outputPath: mockConfig.outputPath,
     theme: mockConfig.theme,
   })
@@ -76,19 +68,6 @@ describe('component generation', () => {
     })
 
     const el = getByTestId('a')
-    expect(el).toHaveClass('mb-1')
-  })
-
-  test('derived components', async () => {
-    const Flex = await import(join(mockConfig.outputPath, 'Flex.svelte'))
-
-    const { getByTestId } = render(Flex, {
-      marginBottom: '1',
-      testId: 'a',
-    })
-
-    const el = getByTestId('a')
-    expect(el).toHaveClass('d-flex')
     expect(el).toHaveClass('mb-1')
   })
 

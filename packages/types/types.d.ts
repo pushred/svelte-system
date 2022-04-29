@@ -40,18 +40,12 @@ type ComponentDoc = {
 }
 
 type ComponentSpec = {
-  filename: string
-  name: string
-  props: PropCategory[]
-}
-
-type DerivedComponentSpec = {
-  defaultProps: {
-    [key: string]: string
+  defaultProps?: {
+    [key: string]: string | number
   }
   filename: string
   name: string
-  sourceComponent: string
+  props: PropCategory[]
 }
 
 type Prop = {

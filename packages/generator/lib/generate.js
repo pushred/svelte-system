@@ -11,22 +11,18 @@ import prettier from 'prettier'
 
 import { generatedComponentsCache } from './caches.js'
 import { htmlTags, voidHtmlElementTags } from './consts.js'
-import { getScaleStyles, getValueStyles } from './utils/index.js'
 
 /**
  * @typedef { import('@svelte-system/types').ComponentDoc } ComponentDoc
  * @typedef { import('@svelte-system/types').ComponentSpec } ComponentSpec
- * @typedef { import('@svelte-system/types').DerivedComponentSpec } DerivedComponentSpec
  * @typedef { import('@svelte-system/types').Prop } Prop
  * @typedef { import('@svelte-system/types').Theme } Theme
  * @typedef { import('@svelte-system/types').ThemeScale } ThemeScale
  * @typedef {{ [key: string]: Prop }} PropsByName
  */
 
-const isTest = process.env.NODE_ENV === 'test'
-
 /** @type {ComponentSpec[]} */
-const componentsToGenerate = [
+const standardComponents = [
   {
     filename: 'Box.svelte',
     name: 'Box',
@@ -41,17 +37,22 @@ const componentsToGenerate = [
       'typography',
     ],
   },
-]
-
-/** @type {DerivedComponentSpec[]} */
-const derivedComponentsToGenerate = [
   {
     defaultProps: {
       display: 'flex',
     },
     filename: 'Flex.svelte',
     name: 'Flex',
-    sourceComponent: 'Box',
+    props: [
+      'borders',
+      'colors',
+      'flex',
+      'layout',
+      'radii',
+      'sizes',
+      'space',
+      'typography',
+    ],
   },
   {
     defaultProps: {
@@ -59,7 +60,16 @@ const derivedComponentsToGenerate = [
     },
     filename: 'Text.svelte',
     name: 'Text',
-    sourceComponent: 'Box',
+    props: [
+      'borders',
+      'colors',
+      'flex',
+      'layout',
+      'radii',
+      'sizes',
+      'space',
+      'typography',
+    ],
   },
 ]
 
@@ -104,78 +114,66 @@ function generateTags({ attributes, index, isLast, tagName }) {
 export function generateComponents({ outputPath, theme }) {
   makeDir.sync(outputPath)
 
-  componentsToGenerate.forEach((component) => {
-    /** @type string[] */
-    const classes = []
+  /** @type ComponentSpec[] */
+  const userComponents = Object.keys(theme.components || {}).map((name) => ({
+    name,
+    defaultProps: theme.components[name],
+    filename: `${name}.svelte`,
+    props: [
+      'borders',
+      'colors',
+      'flex',
+      'layout',
+      'radii',
+      'sizes',
+      'space',
+      'typography',
+    ],
+  }))
 
+  const componentsToGenerate = standardComponents.concat(userComponents)
+
+  componentsToGenerate.forEach((component) => {
     /** @type string[] */
     const exports = []
 
     /** @type string[] */
     const generatedProps = []
 
-    /** @type string[] */
-    const styles = []
-
     component.props.forEach((category) => {
       const props = propsByCategory[category]
+      const defaultProps = (theme.components || {})[component.name]
 
       props.forEach((prop) => {
-        let hasStyles = false
+        const defaultValue =
+          defaultProps && defaultProps[prop.name]
+            ? `'${defaultProps[prop.name]}'`
+            : 'undefined'
 
-        if (prop.scale !== undefined && theme[prop.scale] !== undefined) {
-          hasStyles = true
+        exports.push(`export let ${prop.name} = ${defaultValue}`)
+        generatedProps.push(prop.name)
 
-          const generated = getScaleStyles({
-            prop,
-            scale: theme[prop.scale],
-          })
-
-          classes.push(...generated.classes)
-          styles.push(...generated.styles)
-        }
-
-        if (prop.values) {
-          hasStyles = true
-
-          const generated = getValueStyles({
-            prop,
-            values: prop.values,
-          })
-
-          classes.push(...generated.classes)
-          styles.push(...generated.styles)
-        }
-
-        if (hasStyles) {
-          exports.push(`export let ${prop.name} = undefined`)
-          generatedProps.push(prop.name)
-
-          if (prop.alias) {
-            exports.push(`export let ${prop.alias} = undefined`)
-            generatedProps.push(prop.alias)
-          }
+        if (prop.alias) {
+          exports.push(`export let ${prop.alias} = ${defaultValue}`)
+          generatedProps.push(prop.alias)
         }
       })
     })
 
     generatedComponentsCache.set(component.name, { generatedProps })
 
-    // handle babel vs. rollup/vite ESM difference
-    const clsxImport = isTest
-      ? `import * as clsx from 'clsx'`
-      : `import clsx from 'clsx'`
+    const tagName = (theme.components || {}).as || 'div'
 
-    // peer dependency on clsx temporary till https://github.com/sveltejs/svelte/pull/6898
     const template = `
       <script>
-        ${clsxImport}
+        import { getClass } from '@svelte-system/helpers'
 
-        export let as = 'div'
+        export let as = '${tagName}'
         export let testId = undefined
         ${exports.join('\n')}
 
-        const className = clsx({ ${classes.join(', ')} })
+        let className;
+        $: className = getClass({ ${generatedProps.join(', ')} })
       </script>
 
       ${htmlTags
@@ -188,10 +186,6 @@ export function generateComponents({ outputPath, theme }) {
           })
         )
         .join('\n')}
-
-      <style>
-        ${styles.join('\n')}
-      </style>
     `
 
     writeFileSync(
@@ -203,71 +197,6 @@ export function generateComponents({ outputPath, theme }) {
 
   // return config for logging purposes
   return componentsToGenerate
-}
-
-/**
- * @param {{ outputPath: string, theme: Theme }} options
- */
-export function generateDerivedComponents({ outputPath, theme }) {
-  const derivedComponents = derivedComponentsToGenerate.concat(
-    Object.keys(theme.components || {}).map((name) => ({
-      name,
-      defaultProps: theme.components[name],
-      filename: `${name}.svelte`,
-      sourceComponent: 'Box',
-    }))
-  )
-
-  derivedComponents.forEach((component) => {
-    /** @type string[] */
-    const exports = []
-
-    /** @type string[] */
-    const props = []
-
-    const { defaultProps, sourceComponent } = component
-    const { generatedProps } = generatedComponentsCache.get(sourceComponent)
-
-    if (defaultProps) {
-      for (const [prop, value] of Object.entries(defaultProps)) {
-        props.push(`${prop}="${value}"`)
-      }
-    }
-
-    generatedProps.forEach(
-      /** @param {string} prop */
-      (prop) => {
-        if (defaultProps && defaultProps[prop] !== undefined) return
-        exports.push(`export let ${prop} = undefined`)
-        props.push(`{${prop}}`)
-      }
-    )
-
-    const template = `
-      <script>
-        import ${sourceComponent} from './${sourceComponent}.svelte'
-
-        export let testId = undefined
-        ${exports.join('\n')}
-      </script>
-
-      <${sourceComponent}
-        testId={testId}
-        ${props.join('\n')}
-      >
-        <slot />
-      </${sourceComponent}>
-    `
-
-    writeFileSync(
-      join(outputPath, component.filename),
-      // TODO: wrap this in a try/catch once we can use native ESM in Jest
-      prettier.format(template, { filepath: component.filename })
-    )
-  })
-
-  // return config for logging purposes
-  return derivedComponents
 }
 
 /** @param {{ componentsPath: string, theme: Theme }} options */

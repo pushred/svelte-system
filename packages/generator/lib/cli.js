@@ -9,15 +9,9 @@ import { cosmiconfigSync } from 'cosmiconfig'
 import sade from 'sade'
 import { assert, StructError } from 'superstruct'
 
-import {
-  generateComponents,
-  getComponentDocs,
-  generateDerivedComponents,
-} from './generate.js'
-
-import { generateStylesheet } from './generators/index.js'
-
 import { defaultTheme } from './defaultTheme.js'
+import { generateComponents, getComponentDocs } from './generate.js'
+import { generateStylesheet } from './generators/index.js'
 
 /**
  * @typedef { import('@svelte-system/types').CliOptions } CliOptions
@@ -105,16 +99,9 @@ cli
       theme: userConfig.theme,
     })
 
-    const derivedComponents = generateDerivedComponents({
-      outputPath,
-      theme: userConfig.theme,
-    })
-
-    const componentCount = components.length + derivedComponents.length
-
     console.log(
       chalk.green('✔'),
-      `${componentCount} components generated and saved to ${relativeOutputPath}`
+      `${components.length} components generated and saved to ${relativeOutputPath}`
     )
   })
 
