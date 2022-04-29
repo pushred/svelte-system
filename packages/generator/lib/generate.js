@@ -10,7 +10,7 @@ import * as svelte from 'svelte/compiler'
 import prettier from 'prettier'
 
 import { generatedComponentsCache } from './caches.js'
-import { htmlTags, voidHtmlElementTags } from './consts.js'
+import { events, htmlTags, voidHtmlElementTags } from './consts.js'
 
 /**
  * @typedef { import('@svelte-system/types').ComponentDoc } ComponentDoc
@@ -20,6 +20,8 @@ import { htmlTags, voidHtmlElementTags } from './consts.js'
  * @typedef { import('@svelte-system/types').ThemeScale } ThemeScale
  * @typedef {{ [key: string]: Prop }} PropsByName
  */
+
+const eventForwardingAttributes = events.map((event) => `on:${event}`)
 
 /** @type {ComponentSpec[]} */
 const standardComponents = [
@@ -182,7 +184,11 @@ export function generateComponents({ outputPath, theme }) {
             index,
             isLast: index === htmlTags.length - 1,
             tagName,
-            attributes: ['data-testid={testId}', '{...$$restProps}'],
+            attributes: [
+              ...eventForwardingAttributes,
+              'data-testid={testId}',
+              '{...$$restProps}',
+            ],
           })
         )
         .join('\n')}

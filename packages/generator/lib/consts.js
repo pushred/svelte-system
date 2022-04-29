@@ -1,3 +1,5 @@
+export const events = ['click', 'focus', 'keydown', 'keypress', 'keyup']
+
 // from https://developer.mozilla.org/en-US/docs/Web/HTML/Attributes
 export const globalHtmlAttributes = [
   'accesskey',
