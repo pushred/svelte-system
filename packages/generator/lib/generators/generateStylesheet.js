@@ -8,6 +8,7 @@ import makeDir from 'make-dir'
 // TODO: dynamically import when we can use native ESM in Jest (should be optional peer dep)
 import prettier from 'prettier'
 
+import { propUsageCache } from '../caches.js'
 import { getScaleStyles, getValueStyles } from '../utils/index.js'
 
 /**
@@ -15,9 +16,9 @@ import { getScaleStyles, getValueStyles } from '../utils/index.js'
  */
 
 /**
- * @param {{ outputPath: string, theme: Theme }} options
+ * @param {{ optimize: boolean, outputPath: string, theme: Theme }} options
  */
-export function generateStylesheet({ outputPath, theme }) {
+export function generateStylesheet({ optimize, outputPath, theme }) {
   makeDir.sync(dirname(outputPath))
 
   const categories = [
@@ -50,8 +51,12 @@ export function generateStylesheet({ outputPath, theme }) {
     const props = propsByCategory[category]
 
     props.forEach((prop) => {
+      const detectedUsage = propUsageCache.get(prop.name)
+      if (optimize && detectedUsage) return
+
       if (prop.scale !== undefined && theme[prop.scale] !== undefined) {
         const generated = getScaleStyles({
+          optimize,
           prop,
           scale: theme[prop.scale],
         })
@@ -61,6 +66,7 @@ export function generateStylesheet({ outputPath, theme }) {
 
       if (prop.values) {
         const generated = getValueStyles({
+          optimize,
           prop,
           values: prop.values,
         })

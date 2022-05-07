@@ -1,6 +1,7 @@
 import isPlainObject from 'lodash.isplainobject'
 import kebabCase from 'lodash.kebabcase'
 
+import { propUsageCache } from '../caches.js'
 import { transformValue } from './transformValue.js'
 
 /**
@@ -11,6 +12,7 @@ import { transformValue } from './transformValue.js'
 
 /**
  * @param {Object} params
+ * @param {Boolean} params.optimize
  * @param {Prop} params.prop
  * @param {ThemeScale} params.scale
  * @param {string} [params.nestedClassPrefix]
@@ -20,11 +22,13 @@ import { transformValue } from './transformValue.js'
 export function getScaleStyles({
   nestedClassPrefix,
   nestedScaleKeyPrefix,
+  optimize,
   prop,
   scale,
 }) {
   const classPrefix = nestedClassPrefix || prop.alias || prop.name
   const cssProp = kebabCase(prop.name)
+  const valuesInUse = propUsageCache.get(prop.name) || new Set()
 
   /** @type string[] */
   const classes = []
@@ -36,7 +40,15 @@ export function getScaleStyles({
   const keysByValue = {}
 
   for (const [key, scaleValue] of Object.entries(scale)) {
-    if (scaleValue === undefined || scaleValue === false) {
+    if (optimize && !valuesInUse.has(scaleValue.toString())) {
+      continue
+    }
+
+    if (
+      scaleValue === undefined ||
+      scaleValue === false ||
+      (optimize && !valuesInUse.has(scaleValue.toString()))
+    ) {
       return {
         classes,
         styles,
@@ -45,6 +57,7 @@ export function getScaleStyles({
 
     if (Array.isArray(scaleValue) || isPlainObject(scaleValue)) {
       const nestedStyles = getScaleStyles({
+        optimize,
         prop,
         nestedClassPrefix: `${classPrefix}-${key}`,
         nestedScaleKeyPrefix: nestedScaleKeyPrefix

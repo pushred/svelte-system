@@ -177,4 +177,5 @@ export const Config = object({
   stylesheetPath: optional(string()),
   theme: Theme,
   outputPath: optional(string()),
+  projectPath: optional(string()),
 })

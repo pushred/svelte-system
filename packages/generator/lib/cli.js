@@ -10,6 +10,7 @@ import sade from 'sade'
 import { assert, StructError } from 'superstruct'
 
 import { defaultTheme } from './defaultTheme.js'
+import { detectPropUsage } from './usage.js'
 import { generateComponents, getComponentDocs } from './generate.js'
 import { generateStylesheet } from './generators/index.js'
 
@@ -86,16 +87,28 @@ cli.option('-c --config', 'Path to config file')
 
 cli
   .command('generate-components')
+  .option('--optimize', 'Omit unused props and prop values')
   .option('-o --output', 'Path to output generated components')
-  .action((options) => {
+  .action(async (options) => {
     const userConfig = getUserConfig(options)
     if (!userConfig) return
+
+    const projectPath = options.projectPath || userConfig.projectPath
 
     const outputPath = options.output || userConfig.componentsPath
     const relativeOutputPath = relative(resolve('..'), outputPath)
 
+    if (options.optimize) {
+      await detectPropUsage({
+        outputPath,
+        projectPath,
+        theme: userConfig.theme,
+      })
+    }
+
     const components = generateComponents({
       outputPath,
+      optimize: options.optimize,
       theme: userConfig.theme,
     })
 

@@ -1,6 +1,9 @@
 import clsx from 'clsx'
 import kebabCase from 'lodash.kebabcase'
 
+/**
+ * @param {{ border?: any, borderTop?: any, borderRight?: any, borderBottom?: any, borderLeft?: any, borderColor?: any, borderTopColor?: any, borderRightColor?: any, borderBottomColor?: any, borderLeftColor?: any, borderStyle?: any, borderStyleTop?: any, borderStyleRight?: any, borderStyleBottom?: any, borderStyleLeft?: any, borderWidth?: any, borderWidthTop?: any, borderWidthRight?: any, borderWidthBottom?: any, borderWidthLeft?: any, backgroundColor?: any, bgColor?: any, color?: any, alignItems?: any, align?: any, alignSelf?: any, alignContent?: any, flexBasis?: any, basis?: any, flexDirection?: any, direction?: any, flexGrow?: any, grow?: any, flexShrink?: any, shrink?: any, justifyContent?: any, justify?: any, justifyItems?: any, justifySelf?: any, order?: any, display?: any, d?: any, overflow?: any, overflowX?: any, overflowY?: any, verticalAlign?: any, borderRadius?: any, borderTopRightRadius?: any, borderBottomRightRadius?: any, borderBottomLeftRadius?: any, borderTopLeftRadius?: any, width?: any, w?: any, height?: any, h?: any, minWidth?: any, minW?: any, maxWidth?: any, maxW?: any, minHeight?: any, minH?: any, maxHeight?: any, maxH?: any, margin?: any, m?: any, marginTop?: any, mt?: any, marginRight?: any, mr?: any, marginBottom?: any, mb?: any, marginLeft?: any, ml?: any, padding?: any, p?: any, paddingTop?: any, pt?: any, paddingRight?: any, pr?: any, paddingBottom?: any, pb?: any, paddingLeft?: any, pl?: any, fontFamily?: any, fontSize?: any, fontWeight?: any, letterSpacing?: any, lineHeight?: any, textAlign?: any, textTransform?: any }} styles
+ */
 export function getClass({
   border,
   borderTop,

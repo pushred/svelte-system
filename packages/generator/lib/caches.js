@@ -13,6 +13,13 @@ export class Cache {
   }
 
   /**
+   * @returns {string[]}
+   */
+  getAllKeys() {
+    return Object.keys(this.cache)
+  }
+
+  /**
    * @param {string} key
    * @param {any} value
    * @returns {void}
@@ -24,3 +31,4 @@ export class Cache {
 }
 
 export const generatedComponentsCache = new Cache()
+export const propUsageCache = new Cache()

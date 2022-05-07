@@ -1,3 +1,4 @@
+import { propUsageCache } from '../caches'
 import { getScaleStyles } from './getScaleStyles'
 
 test('array scale', () => {
@@ -222,4 +223,19 @@ test('deeply nested object scale', () => {
     '.color-modes-light-gray-50 { color: #F9FAFB }',
     '.color-modes-dark-gray-50 { color: #F8FAFC }',
   ])
+})
+
+test('omits values unused in project in optimize mode', () => {
+  propUsageCache.set('gap', new Set(['1']))
+
+  const result = getScaleStyles({
+    optimize: true,
+    prop: {
+      name: 'gap',
+    },
+    scale: [0, 1],
+  })
+
+  expect(result.classes).toEqual(["'gap-1': gap === '1'"])
+  expect(result.styles).toEqual(['.gap-1 { gap: 1px }'])
 })

@@ -42,10 +42,18 @@ function generateGetClass() {
     propArgs.push('[`' + computedName + '`]: ' + conditions)
   })
 
+  const propParamDocs = propNames
+    .filter(Boolean)
+    .map((name) => `${name}?: any`)
+    .join(', ')
+
   const template = `
     import clsx from 'clsx'
     import kebabCase from 'lodash.kebabcase';
 
+    /**
+     * @param {{ ${propParamDocs} }} styles
+     */
     export function getClass({
       ${propNames.filter(Boolean).join(',')}
     } = {}) {

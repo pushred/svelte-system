@@ -9,7 +9,7 @@ import * as svelte from 'svelte/compiler'
 // TODO: dynamically import when we can use native ESM in Jest (should be optional peer dep)
 import prettier from 'prettier'
 
-import { generatedComponentsCache } from './caches.js'
+import { generatedComponentsCache, propUsageCache } from './caches.js'
 import { events, htmlTags, voidHtmlElementTags } from './consts.js'
 
 /**
@@ -111,9 +111,9 @@ function generateTags({ attributes, index, isLast, tagName }) {
 }
 
 /**
- * @param {{ outputPath: string, theme: Theme }} options
+ * @param {{ optimize: boolean, outputPath: string, theme: Theme }} options
  */
-export function generateComponents({ outputPath, theme }) {
+export function generateComponents({ optimize, outputPath, theme }) {
   makeDir.sync(outputPath)
 
   /** @type ComponentSpec[] */
@@ -147,6 +147,10 @@ export function generateComponents({ outputPath, theme }) {
       const defaultProps = (theme.components || {})[component.name]
 
       props.forEach((prop) => {
+        const propUsage = propUsageCache.get(prop.name)
+        const valuesInUse = propUsage ? propUsage[component.name] : undefined
+        if (optimize && !valuesInUse) return
+
         const defaultValue =
           defaultProps && defaultProps[prop.name]
             ? `'${defaultProps[prop.name]}'`
@@ -164,7 +168,7 @@ export function generateComponents({ outputPath, theme }) {
 
     generatedComponentsCache.set(component.name, { generatedProps })
 
-    const tagName = (theme.components || {}).as || 'div'
+    const tagName = (theme.components || {})?.as || 'div'
 
     const template = `
       <script>
