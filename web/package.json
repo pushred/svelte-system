@@ -13,6 +13,6 @@
   "devDependencies": {
     "@svelte-system/generator": "workspace:*",
     "@sveltejs/kit": "next",
-    "svelte": "^3.42.6"
+    "svelte": "^3.48.0"
   }
 }

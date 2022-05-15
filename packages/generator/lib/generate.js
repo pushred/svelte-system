@@ -10,7 +10,7 @@ import * as svelte from 'svelte/compiler'
 import prettier from 'prettier'
 
 import { generatedComponentsCache, propUsageCache } from './caches.js'
-import { events, htmlTags, voidHtmlElementTags } from './consts.js'
+import { events } from './consts.js'
 
 /**
  * @typedef { import('@svelte-system/types').ComponentDoc } ComponentDoc
@@ -74,41 +74,6 @@ const standardComponents = [
     ],
   },
 ]
-
-/**
- * @param {{
- *  attributes: string[],
- *  index: number,
- *  isLast: boolean,
- *  tagName: string
- * }} options
- */
-function generateTags({ attributes, index, isLast, tagName }) {
-  let output = ''
-
-  if (index === 0) {
-    output += `{#if as === '${tagName}'}\n`
-  } else {
-    output += `{:else if as === '${tagName}'}\n`
-  }
-
-  if (voidHtmlElementTags.includes(tagName)) {
-    output += `<${tagName}
-      class={className}
-      ${attributes.join(' ')}
-    />`
-  } else {
-    output += `<${tagName}
-      class={className}
-      ${attributes.join(' ')}
-    >
-      <slot />
-    </${tagName}>`
-  }
-
-  if (isLast) output += '{/if}'
-  return output
-}
 
 /**
  * @param {{ optimize: boolean, outputPath: string, theme: Theme }} options
@@ -182,20 +147,15 @@ export function generateComponents({ optimize, outputPath, theme }) {
         $: className = getClass({ ${generatedProps.join(', ')} })
       </script>
 
-      ${htmlTags
-        .map((tagName, index) =>
-          generateTags({
-            index,
-            isLast: index === htmlTags.length - 1,
-            tagName,
-            attributes: [
-              ...eventForwardingAttributes,
-              'data-testid={testId}',
-              '{...$$restProps}',
-            ],
-          })
-        )
-        .join('\n')}
+      <svelte:element
+        this={as}
+        class={className}
+        data-testid={testId}
+        ${eventForwardingAttributes.join(' ')}
+        {...$$restProps}
+      >
+        <slot />
+      </svelte:element>
     `
 
     writeFileSync(
