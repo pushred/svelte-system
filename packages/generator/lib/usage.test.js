@@ -1,15 +1,15 @@
 import { globby } from 'globby'
 import { readFileSync } from 'fs'
 
-import { propUsageCache } from './caches.js'
+import { eventUsageCache, propUsageCache } from './caches.js'
 import { detectPropUsage } from './usage.js'
 
 jest.mock('fs')
 jest.mock('globby')
 
 const template = `
-  <ComponentA propA="a" propB={1} propC={[1, '2']}>
-    <ComponentB propC={3} propD={['a', 'b']} />
+  <ComponentA propA="a" propB={1} propC={[1, '2']} on:click={() => {}}>
+    <ComponentB propC={3} propD={['a', 'b']} on:focus={() => {}} />
   </ComponentA>
 `
 
@@ -88,5 +88,18 @@ test('catalogs and normalizes attribute prop value usage per component', () => {
 
   expect([...propUsageCache.get('propF').ComponentB]).toEqual(
     expect.arrayContaining(['a'])
+  )
+})
+
+test('catalogs event handler usage per component', () => {
+  expect(eventUsageCache.get('ComponentA')).toBeInstanceOf(Set)
+  expect(eventUsageCache.get('ComponentB')).toBeInstanceOf(Set)
+
+  expect([...eventUsageCache.get('ComponentA')]).toEqual(
+    expect.arrayContaining(['click'])
+  )
+
+  expect([...eventUsageCache.get('ComponentB')]).toEqual(
+    expect.arrayContaining(['focus'])
   )
 })

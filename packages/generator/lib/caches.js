@@ -30,5 +30,6 @@ export class Cache {
   }
 }
 
+export const eventUsageCache = new Cache()
 export const generatedComponentsCache = new Cache()
 export const propUsageCache = new Cache()

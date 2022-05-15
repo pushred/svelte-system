@@ -8,7 +8,7 @@ import { walk } from 'estree-walker'
 import { globby } from 'globby'
 import { parse } from 'svelte/compiler'
 
-import { propUsageCache } from './caches.js'
+import { eventUsageCache, propUsageCache } from './caches.js'
 
 /**
  * @param {{
@@ -28,6 +28,19 @@ function cachePropValues(catalog) {
       })
     }
   }
+}
+
+/**
+ * @param {{
+ *  componentName: string;
+ *  event: string;
+ * }} event
+ */
+function cacheEvent({ componentName, event }) {
+  eventUsageCache.set(
+    componentName,
+    new Set([...(eventUsageCache.get(componentName) || []), event])
+  )
 }
 
 /**
@@ -100,6 +113,10 @@ export async function detectPropUsage({ outputPath, projectPath, theme }) {
         }
 
         node.attributes.forEach((prop) => {
+          if (prop.type === 'EventHandler') {
+            return cacheEvent({ componentName, event: prop.name })
+          }
+
           if (
             prop.type !== 'Attribute' ||
             !Array.isArray(prop.value) ||

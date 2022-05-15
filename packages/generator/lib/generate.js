@@ -9,7 +9,12 @@ import * as svelte from 'svelte/compiler'
 // TODO: dynamically import when we can use native ESM in Jest (should be optional peer dep)
 import prettier from 'prettier'
 
-import { generatedComponentsCache, propUsageCache } from './caches.js'
+import {
+  eventUsageCache,
+  generatedComponentsCache,
+  propUsageCache,
+} from './caches.js'
+
 import { events } from './consts.js'
 
 /**
@@ -20,8 +25,6 @@ import { events } from './consts.js'
  * @typedef { import('@svelte-system/types').ThemeScale } ThemeScale
  * @typedef {{ [key: string]: Prop }} PropsByName
  */
-
-const eventForwardingAttributes = events.map((event) => `on:${event}`)
 
 /** @type {ComponentSpec[]} */
 const standardComponents = [
@@ -130,6 +133,14 @@ export function generateComponents({ optimize, outputPath, theme }) {
         }
       })
     })
+
+    const eventForwardingAttributes = events
+      .filter((event) => {
+        if (!optimize) return true
+        const eventUsage = eventUsageCache.get(component.name)
+        return Boolean(eventUsage?.has(event))
+      })
+      .map((event) => `on:${event}`)
 
     generatedComponentsCache.set(component.name, { generatedProps })
 
