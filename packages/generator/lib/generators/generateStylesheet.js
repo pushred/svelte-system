@@ -21,19 +21,8 @@ import { getScaleStyles, getValueStyles } from '../utils/index.js'
 export function generateStylesheet({ optimize, outputPath, theme }) {
   makeDir.sync(dirname(outputPath))
 
-  const categories = [
-    'borders',
-    'colors',
-    'flex',
-    'layout',
-    'radii',
-    'sizes',
-    'space',
-    'typography',
-  ]
-
   /** @type string[] */
-  const styles = [
+  const accumulator = [
     `
       button {
         appearance: none;
@@ -47,12 +36,13 @@ export function generateStylesheet({ optimize, outputPath, theme }) {
     `,
   ]
 
-  categories.forEach((category) => {
-    const props = propsByCategory[category]
+  /** @type string[] */
+  const styles = []
 
+  for (const [_category, props] of Object.entries(propsByCategory)) {
     props.forEach((prop) => {
       const detectedUsage = propUsageCache.get(prop.name)
-      if (optimize && detectedUsage) return
+      if (optimize && !detectedUsage) return
 
       if (prop.scale !== undefined && theme[prop.scale] !== undefined) {
         const generated = getScaleStyles({
@@ -74,15 +64,26 @@ export function generateStylesheet({ optimize, outputPath, theme }) {
         styles.push(...generated.styles)
       }
     })
-  })
+  }
 
-  const filename = basename(outputPath)
-  const stylesheet = styles.join('\n')
+  accumulator.push(...styles)
+
+  for (const [breakpoint, minWidth] of Object.entries(
+    theme.breakpoints || {}
+  )) {
+    accumulator.push(`
+      @media (min-width: ${minWidth}) {
+        ${styles
+          .map((style) => style.replace(/^\./, '.' + breakpoint + ':'))
+          .join('\n')}
+      }
+    `)
+  }
 
   writeFileSync(
     outputPath,
     // TODO: wrap this in a try/catch once we can use native ESM in Jest
-    prettier.format(stylesheet, { filepath: filename })
+    prettier.format(accumulator.join('\n'), { filepath: basename(outputPath) })
   )
 
   // return config for logging purposes

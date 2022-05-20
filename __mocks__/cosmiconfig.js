@@ -10,6 +10,11 @@ function cosmiconfigSync() {
             process.cwd(),
             `test-build-${randomBytes(5).toString('hex')}`
           ),
+          stylesheetPath: join(
+            process.cwd(),
+            `test-build-${randomBytes(5).toString('hex')}`,
+            'styles.css'
+          ),
           theme: {
             borders: ['none', '1px solid'],
 

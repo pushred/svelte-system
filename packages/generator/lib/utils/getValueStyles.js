@@ -7,7 +7,10 @@ import { propUsageCache } from '../caches.js'
  */
 
 /**
- * @param {{ optimize: boolean, prop: Prop, values: string[] }}
+ * @param {Object} params
+ * @param {Boolean} params.optimize
+ * @param {Prop} params.prop
+ * @param {string[]} params.values
  */
 
 export function getValueStyles({ optimize, prop, values }) {

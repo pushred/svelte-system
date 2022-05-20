@@ -40,19 +40,12 @@ export function getScaleStyles({
   const keysByValue = {}
 
   for (const [key, scaleValue] of Object.entries(scale)) {
-    if (optimize && !valuesInUse.has(scaleValue.toString())) {
-      continue
-    }
-
     if (
       scaleValue === undefined ||
       scaleValue === false ||
-      (optimize && !valuesInUse.has(scaleValue.toString()))
+      (optimize && !valuesInUse.has(key))
     ) {
-      return {
-        classes,
-        styles,
-      }
+      continue
     }
 
     if (Array.isArray(scaleValue) || isPlainObject(scaleValue)) {
