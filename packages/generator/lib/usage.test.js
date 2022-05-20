@@ -8,7 +8,14 @@ jest.mock('fs')
 jest.mock('globby')
 
 const template = `
-  <ComponentA propA="a" propB={1} propC={[1, '2']} on:click={() => {}}>
+  <ComponentA
+    propA="a"
+    propB={1}
+    propC={[1, '2']}
+    propG={cond ? 'a' : 'b'}
+    propH={condA ? 'a' : condB ? 'c' : undefined}
+    on:click={() => {}}
+  >
     <ComponentB propC={3} propD={['a', 'b']} on:focus={() => {}} />
   </ComponentA>
 `
@@ -88,6 +95,14 @@ test('catalogs and normalizes attribute prop value usage per component', () => {
 
   expect([...propUsageCache.get('propF').ComponentB]).toEqual(
     expect.arrayContaining(['a'])
+  )
+
+  expect([...propUsageCache.get('propG').ComponentA]).toEqual(
+    expect.arrayContaining(['a', 'b'])
+  )
+
+  expect([...propUsageCache.get('propH').ComponentA]).toEqual(
+    expect.arrayContaining(['a', 'c'])
   )
 })
 

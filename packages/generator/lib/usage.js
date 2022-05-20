@@ -134,6 +134,16 @@ export async function detectPropUsage({ outputPath, projectPath, theme }) {
 
           if (value.type !== 'MustacheTag') return
 
+          if (value.expression.type === 'ConditionalExpression') {
+            walk(value, {
+              enter(conditionalNode) {
+                if (conditionalNode.type === 'Literal') {
+                  catalogPropValue(propName, conditionalNode.value)
+                }
+              },
+            })
+          }
+
           if (value.expression.type === 'Literal') {
             catalogPropValue(propName, value.expression.value)
           }
