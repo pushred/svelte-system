@@ -155,15 +155,15 @@ export function generateComponents({ optimize, outputPath, theme }) {
         ${exports.join('\n')}
 
         let className;
-        $: className = getClass({ ${generatedProps.join(', ')} })
+        $: className = getClass($$props.class, { ${generatedProps.join(', ')} })
       </script>
 
       <svelte:element
         this={as}
+        {...$$restProps}
         class={className}
         data-testid={testId}
         ${eventForwardingAttributes.join(' ')}
-        {...$$restProps}
       >
         <slot />
       </svelte:element>

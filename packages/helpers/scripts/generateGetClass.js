@@ -52,12 +52,16 @@ function generateGetClass() {
     import kebabCase from 'lodash.kebabcase';
 
     /**
+     * @param {string} [classString]
      * @param {{ ${propParamDocs} }} styles
      */
-    export function getClass({
-      ${propNames.filter(Boolean).join(',')}
-    } = {}) {
-      return clsx({
+    export function getClass(
+      classString,
+      {
+        ${propNames.filter(Boolean).join(',')}
+      } = {}
+    ) {
+      return clsx(classString, {
         ${propArgs.join(',')}
       })
     }
