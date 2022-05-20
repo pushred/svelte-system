@@ -144,7 +144,7 @@ export function generateComponents({ optimize, outputPath, theme }) {
 
     generatedComponentsCache.set(component.name, { generatedProps })
 
-    const tagName = (theme.components || {})?.as || 'div'
+    const tagName = (theme.components || {})[component.name]?.as || 'div'
 
     const template = `
       <script>
