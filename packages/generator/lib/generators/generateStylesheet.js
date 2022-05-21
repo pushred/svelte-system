@@ -16,7 +16,7 @@ import { getScaleStyles, getValueStyles } from '../utils/index.js'
  */
 
 /**
- * @param {{ optimize: boolean, outputPath: string, theme: Theme }} options
+ * @param {{ optimize?: boolean, outputPath: string, theme: Theme }} options
  */
 export function generateStylesheet({ optimize, outputPath, theme }) {
   makeDir.sync(dirname(outputPath))

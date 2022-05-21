@@ -11,8 +11,12 @@ import { assert, StructError } from 'superstruct'
 
 import { defaultTheme } from './defaultTheme.js'
 import { detectPropUsage } from './usage.js'
-import { generateComponents, getComponentDocs } from './generate.js'
-import { generateStylesheet } from './generators/index.js'
+
+import {
+  generateComponents,
+  generateDocs,
+  generateStylesheet,
+} from './generators/index.js'
 
 /**
  * @typedef { import('@svelte-system/types').CliOptions } CliOptions
@@ -132,7 +136,7 @@ cli
     const outputPath = options.output || userConfig.docsPath
     const relativeOutputPath = relative(resolve('..'), outputPath)
 
-    const componentDocs = await getComponentDocs({
+    const componentDocs = await generateDocs({
       componentsPath,
       theme: userConfig.theme,
     })

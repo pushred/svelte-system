@@ -1,9 +1,8 @@
-import { readdirSync, readFileSync, writeFileSync } from 'fs'
-import { basename, join } from 'path'
+import { writeFileSync } from 'fs'
+import { join } from 'path'
 
-import { propsByCategory, propsByName } from '@svelte-system/props'
+import { propsByCategory } from '@svelte-system/props'
 import makeDir from 'make-dir'
-import * as svelte from 'svelte/compiler'
 
 // Intentionally undeclared dep, should use project's own Prettier installation
 // TODO: dynamically import when we can use native ESM in Jest (should be optional peer dep)
@@ -13,9 +12,10 @@ import {
   eventUsageCache,
   generatedComponentsCache,
   propUsageCache,
-} from './caches.js'
+} from '../caches.js'
 
-import { events } from './consts.js'
+import { events } from '../consts.js'
+import { components as standardComponents } from './components.js'
 
 /**
  * @typedef { import('@svelte-system/types').ComponentDoc } ComponentDoc
@@ -25,58 +25,6 @@ import { events } from './consts.js'
  * @typedef { import('@svelte-system/types').ThemeScale } ThemeScale
  * @typedef {{ [key: string]: Prop }} PropsByName
  */
-
-/** @type {ComponentSpec[]} */
-const standardComponents = [
-  {
-    filename: 'Box.svelte',
-    name: 'Box',
-    props: [
-      'borders',
-      'colors',
-      'flex',
-      'layout',
-      'radii',
-      'sizes',
-      'space',
-      'typography',
-    ],
-  },
-  {
-    defaultProps: {
-      display: 'flex',
-    },
-    filename: 'Flex.svelte',
-    name: 'Flex',
-    props: [
-      'borders',
-      'colors',
-      'flex',
-      'layout',
-      'radii',
-      'sizes',
-      'space',
-      'typography',
-    ],
-  },
-  {
-    defaultProps: {
-      as: 'p',
-    },
-    filename: 'Text.svelte',
-    name: 'Text',
-    props: [
-      'borders',
-      'colors',
-      'flex',
-      'layout',
-      'radii',
-      'sizes',
-      'space',
-      'typography',
-    ],
-  },
-]
 
 /**
  * @param {{ optimize: boolean, outputPath: string, theme: Theme }} options
@@ -178,45 +126,4 @@ export function generateComponents({ optimize, outputPath, theme }) {
 
   // return config for logging purposes
   return componentsToGenerate
-}
-
-/** @param {{ componentsPath: string, theme: Theme }} options */
-export async function getComponentDocs({ componentsPath, theme }) {
-  const componentFiles = readdirSync(componentsPath)
-
-  /** @type {ComponentDoc[]} */
-  const componentDocs = []
-
-  componentFiles.forEach((filename) => {
-    const path = join(componentsPath, filename)
-    const source = readFileSync(path, { encoding: 'utf-8' })
-    const compilerResult = svelte.compile(source, {})
-
-    componentDocs.push({
-      name: basename(filename, '.svelte'),
-      props: compilerResult.vars
-        .map((prop) => propsByName[prop.name])
-        .filter(Boolean)
-        .map(
-          /** @param {Prop} prop */
-          (prop) => {
-            // enrich docs with system values
-            const values = []
-
-            if (prop.scale && theme[prop.scale]) {
-              values.push(...Object.keys(theme[prop.scale]))
-            }
-
-            if (prop.values) values.push(...prop.values)
-
-            return {
-              ...prop,
-              values,
-            }
-          }
-        ),
-    })
-  })
-
-  return componentDocs
 }
