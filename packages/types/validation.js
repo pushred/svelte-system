@@ -22,6 +22,11 @@ import {
   union,
 } from 'superstruct'
 
+const NumberString = pattern(string(), /[A-Z0-9]+/)
+const PixelString = pattern(string(), /[0-9]+px/)
+
+// css
+
 const BorderShorthand = union([
   literal('none'),
   pattern(
@@ -40,16 +45,6 @@ const BorderStyle = enums([
   'ridge',
   'solid',
 ])
-
-const NumberString = pattern(string(), /[A-Z0-9]+/)
-const PixelString = pattern(string(), /[0-9]+px/)
-
-const BorderShorthandScaleArray = array(BorderShorthand)
-const BorderShorthandScaleObject = record(string(), BorderShorthand)
-const BorderStyleScaleArray = array(BorderStyle)
-const BorderStyleScaleObject = record(string(), BorderStyle)
-const BorderWidthScaleArray = array(union([number(), PixelString]))
-const BorderWidthScaleObject = record(string(), union([number(), PixelString]))
 
 const CssHexColor = pattern(string(), hexColorRegex({ strict: true }))
 const CssHexAlphaColor = pattern(string(), hexaColorRegex({ strict: true }))
@@ -78,6 +73,17 @@ const CssFontFamily = string()
 
 const CssLineHeight = union([pattern(string(), /[0-9\.]+%?/), number()])
 const CssFontWeight = union([pattern(string(), /[0-9]+/), integer()])
+
+// theme
+
+const BorderShorthandScaleArray = array(BorderShorthand)
+const BorderShorthandScaleObject = record(string(), BorderShorthand)
+const BorderStyleScaleArray = array(BorderStyle)
+const BorderStyleScaleObject = record(string(), BorderStyle)
+const BorderWidthScaleArray = array(union([number(), PixelString]))
+const BorderWidthScaleObject = record(string(), union([number(), PixelString]))
+
+const BreakpointObject = record(string(), CssLength)
 
 // TODO: type nested scales, esp. modes
 const ColorsScale = type({
@@ -119,6 +125,8 @@ export const Theme = type({
   borderWidths: optional(
     union([BorderWidthScaleArray, BorderWidthScaleObject])
   ),
+
+  breakpoints: optional(BreakpointObject),
 
   colors: ColorsScale,
 
