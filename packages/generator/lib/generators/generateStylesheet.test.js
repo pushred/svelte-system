@@ -99,3 +99,19 @@ test('does not generate classes for unused prop values', () => {
   expect(optimizedStylesheet).not.toEqual(expect.stringContaining('justify-right')) // prettier-ignore
   expect(optimizedStylesheet).not.toEqual(expect.stringContaining('mt-2'))
 })
+
+test('creates a min-width media query for each breakpoint', () => {
+  for (const minWidth of Object.values(mockConfig.theme.breakpoints)) {
+    expect(generatedStylesheet).toEqual(
+      expect.stringContaining(`min-width: ${minWidth}`)
+    )
+  }
+})
+
+test('prefixes classes within each breakpoint media query', () => {
+  for (const prefix of Object.keys(mockConfig.theme.breakpoints)) {
+    expect(generatedStylesheet).toEqual(
+      expect.stringContaining(`.${prefix}:mt-1`)
+    )
+  }
+})

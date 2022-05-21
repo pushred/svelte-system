@@ -73,9 +73,11 @@ export function generateStylesheet({ optimize, outputPath, theme }) {
   )) {
     accumulator.push(`
       @media (min-width: ${minWidth}) {
+        \n
         ${styles
           .map((style) => style.replace(/^\./, '.' + breakpoint + ':'))
-          .join('\n')}
+          .join('\n\n')}
+        \n
       }
     `)
   }
@@ -83,7 +85,9 @@ export function generateStylesheet({ optimize, outputPath, theme }) {
   writeFileSync(
     outputPath,
     // TODO: wrap this in a try/catch once we can use native ESM in Jest
-    prettier.format(accumulator.join('\n'), { filepath: basename(outputPath) })
+    prettier.format(accumulator.join('\n\n'), {
+      filepath: basename(outputPath),
+    })
   )
 
   // return config for logging purposes
