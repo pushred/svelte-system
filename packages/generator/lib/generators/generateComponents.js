@@ -16,6 +16,7 @@ import {
 
 import { events } from '../consts.js'
 import { components as standardComponents } from './components.js'
+import { generateClassProps } from './generateClassProps.js'
 
 /**
  * @typedef { import('@svelte-system/types').ComponentDoc } ComponentDoc
@@ -56,6 +57,9 @@ export function generateComponents({ optimize, outputPath, theme }) {
     const exports = []
 
     /** @type string[] */
+    const generatedClassProps = []
+
+    /** @type string[] */
     const generatedProps = []
 
     component.props.forEach((category) => {
@@ -79,6 +83,10 @@ export function generateComponents({ optimize, outputPath, theme }) {
           exports.push(`export let ${prop.alias} = ${defaultValue}`)
           generatedProps.push(prop.alias)
         }
+
+        generatedClassProps.push(
+          ...generateClassProps({ component, optimize, prop, theme })
+        )
       })
     })
 
@@ -96,20 +104,15 @@ export function generateComponents({ optimize, outputPath, theme }) {
 
     const template = `
       <script>
-        import { getClass } from '@svelte-system/helpers'
-
         export let as = '${tagName}'
         export let testId = undefined
         ${exports.join('\n')}
-
-        let className;
-        $: className = getClass($$props.class, { ${generatedProps.join(', ')} })
       </script>
 
       <svelte:element
         this={as}
         {...$$restProps}
-        class={className}
+        ${generatedClassProps.join('\n')}
         data-testid={testId}
         ${eventForwardingAttributes.join(' ')}
       >
