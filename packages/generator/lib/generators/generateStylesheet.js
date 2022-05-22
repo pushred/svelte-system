@@ -45,23 +45,23 @@ export function generateStylesheet({ optimize, outputPath, theme }) {
       if (optimize && !detectedUsage) return
 
       if (prop.scale !== undefined && theme[prop.scale] !== undefined) {
-        const generated = getScaleStyles({
+        const generatedStyles = getScaleStyles({
           optimize,
           prop,
           scale: theme[prop.scale],
         })
 
-        styles.push(...generated.styles)
+        styles.push(...generatedStyles)
       }
 
       if (prop.values) {
-        const generated = getValueStyles({
+        const generatedStyles = getValueStyles({
           optimize,
           prop,
           values: prop.values,
         })
 
-        styles.push(...generated.styles)
+        styles.push(...generatedStyles)
       }
     })
   }

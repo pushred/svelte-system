@@ -19,9 +19,6 @@ export function getValueStyles({ optimize, prop, values }) {
   const valuesInUse = propUsageCache.get(prop.name) || new Set()
 
   /** @type string[] */
-  const classes = []
-
-  /** @type string[] */
   const styles = []
 
   values.forEach((value) => {
@@ -37,12 +34,8 @@ export function getValueStyles({ optimize, prop, values }) {
 
     const className = kebabCase(`${classPrefix}-${value}`)
 
-    classes.push(`'${className}': ${conditions.join(' || ')}`)
     styles.push(`.${className} { ${cssProp}: ${value} }`)
   })
 
-  return {
-    classes,
-    styles,
-  }
+  return styles
 }

@@ -11,8 +11,8 @@ import { transformValue } from './transformValue.js'
  */
 
 /**
- * @param {Object} params
- * @param {Boolean} params.optimize
+ * @param {object} params
+ * @param {boolean} params.optimize
  * @param {Prop} params.prop
  * @param {ThemeScale} params.scale
  * @param {string} [params.nestedClassPrefix]
@@ -29,9 +29,6 @@ export function getScaleStyles({
   const classPrefix = nestedClassPrefix || prop.alias || prop.name
   const cssProp = kebabCase(prop.name)
   const valuesInUse = propUsageCache.get(prop.name) || new Set()
-
-  /** @type string[] */
-  const classes = []
 
   /** @type string[] */
   const styles = []
@@ -59,8 +56,7 @@ export function getScaleStyles({
         scale: scaleValue,
       })
 
-      classes.push(...nestedStyles.classes)
-      styles.push(...nestedStyles.styles)
+      styles.push(...nestedStyles)
     } else if (Array.isArray(keysByValue[scaleValue])) {
       // collect aliases of array values
       keysByValue[scaleValue].push(key)
@@ -69,37 +65,19 @@ export function getScaleStyles({
     }
   }
 
-  /** @type {{ [key: string]: { conditions: string[], classKey: string } }} */
+  /** @type {{ [key: string]: string } }} */
   const classesToCreate = {}
 
   for (const [scaleValue, keys] of Object.entries(keysByValue)) {
-    classesToCreate[scaleValue] = {
-      classKey: keys[0].toString(),
-      conditions: keys.map((key) =>
-        nestedScaleKeyPrefix
-          ? `${prop.name} === '${nestedScaleKeyPrefix}.${key}'`
-          : `${prop.name} === '${key}'`
-      ),
-    }
-
-    if (prop.alias) {
-      classesToCreate[scaleValue].conditions.push(
-        ...keys.map((key) => `${prop.alias} === '${key}'`)
-      )
-    }
+    classesToCreate[scaleValue] = keys[0].toString()
   }
 
-  for (const [scaleValue, classToCreate] of Object.entries(classesToCreate)) {
+  for (const [scaleValue, classKey] of Object.entries(classesToCreate)) {
     const value = transformValue(scaleValue, prop.transform)
-    const { classKey, conditions } = classToCreate
     const className = kebabCase(`${classPrefix}-${classKey}`)
 
-    classes.push(`'${className}': ${conditions.join(' || ')}`)
     styles.push(`.${className} { ${cssProp}: ${value} }`)
   }
 
-  return {
-    classes,
-    styles,
-  }
+  return styles
 }
