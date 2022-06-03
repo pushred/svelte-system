@@ -63,8 +63,19 @@ beforeAll(() => {
 
   // optimized stylesheet
 
-  propUsageCache.set('justifyContent', new Set(['left']))
-  propUsageCache.set('marginTop', new Set(['1']))
+  propUsageCache.clear()
+
+  propUsageCache.set('justify', {
+    componentA: {
+      all: new Set(['left']),
+    },
+  })
+
+  propUsageCache.set('mt', {
+    componentA: {
+      all: new Set(['1']),
+    },
+  })
 
   generateStylesheet({
     optimize: true,
@@ -111,7 +122,7 @@ test('creates a min-width media query for each breakpoint', () => {
 test('prefixes classes within each breakpoint media query', () => {
   for (const prefix of Object.keys(mockConfig.theme.breakpoints)) {
     expect(generatedStylesheet).toEqual(
-      expect.stringContaining(`.${prefix}:mt-1`)
+      expect.stringContaining(`.${prefix}\\:mt-1`)
     )
   }
 })

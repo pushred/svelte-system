@@ -1,7 +1,11 @@
 import { propUsageCache } from '../caches'
 import { getScaleStyles } from './getScaleStyles'
 
-test('array scale', () => {
+beforeEach(() => {
+  propUsageCache.clear()
+})
+
+test('creates styling data for each array scale increment', () => {
   const result = getScaleStyles({
     prop: {
       name: 'gap',
@@ -9,12 +13,28 @@ test('array scale', () => {
     scale: [0, 1],
   })
 
-  expect(result).toEqual(['.gap-0 { gap: 0 }', '.gap-1 { gap: 1px }'])
+  expect(result).toMatchInlineSnapshot(`
+    Array [
+      Object {
+        "breakpoints": Set {},
+        "className": "gap-0",
+        "cssProp": "gap",
+        "value": "0",
+      },
+      Object {
+        "breakpoints": Set {},
+        "className": "gap-1",
+        "cssProp": "gap",
+        "value": "1px",
+      },
+    ]
+  `)
 })
 
 test('array scale with aliases', () => {
   const gaps = [0, 1]
 
+  // TODO: aliases should probably be used for classes when used
   gaps.sm = gaps[0]
   gaps.lg = gaps[1]
 
@@ -25,10 +45,25 @@ test('array scale with aliases', () => {
     scale: gaps,
   })
 
-  expect(result).toEqual(['.gap-0 { gap: 0 }', '.gap-1 { gap: 1px }'])
+  expect(result).toMatchInlineSnapshot(`
+    Array [
+      Object {
+        "breakpoints": Set {},
+        "className": "gap-0",
+        "cssProp": "gap",
+        "value": "0",
+      },
+      Object {
+        "breakpoints": Set {},
+        "className": "gap-1",
+        "cssProp": "gap",
+        "value": "1px",
+      },
+    ]
+  `)
 })
 
-test('prop aliases', () => {
+test('uses prop alias for class prefix when available', () => {
   const result = getScaleStyles({
     prop: {
       alias: 'w',
@@ -37,41 +72,22 @@ test('prop aliases', () => {
     scale: [0, 4],
   })
 
-  expect(result).toEqual(['.w-0 { width: 0 }', '.w-1 { width: 4px }'])
-})
-
-test('array scale with aliases and prop aliases', () => {
-  const sizes = [0, 4]
-
-  sizes.sm = sizes[0]
-  sizes.lg = sizes[1]
-
-  const result = getScaleStyles({
-    prop: {
-      alias: 'w',
-      name: 'width',
-    },
-    scale: sizes,
-  })
-
-  expect(result).toEqual(['.w-0 { width: 0 }', '.w-1 { width: 4px }'])
-})
-
-test('object scale', () => {
-  const result = getScaleStyles({
-    prop: {
-      name: 'color',
-    },
-    scale: {
-      text: '#fff',
-      background: '#000',
-    },
-  })
-
-  expect(result).toEqual([
-    '.color-text { color: #fff }',
-    '.color-background { color: #000 }',
-  ])
+  expect(result).toMatchInlineSnapshot(`
+    Array [
+      Object {
+        "breakpoints": Set {},
+        "className": "w-0",
+        "cssProp": "width",
+        "value": "0",
+      },
+      Object {
+        "breakpoints": Set {},
+        "className": "w-1",
+        "cssProp": "width",
+        "value": "4px",
+      },
+    ]
+  `)
 })
 
 test('nested array scale', () => {
@@ -84,37 +100,22 @@ test('nested array scale', () => {
     },
   })
 
-  expect(result).toEqual([
-    '.color-gray-0 { color: #F9FAFB }',
-    '.color-gray-1 { color: #F3F4F6 }',
-  ])
-})
-
-test('nested object scale', () => {
-  const result = getScaleStyles({
-    prop: {
-      name: 'color',
-    },
-    scale: {
-      modes: {
-        light: {
-          text: '#000',
-          background: '#FFF',
-        },
-        dark: {
-          text: '#FFF',
-          background: '#000',
-        },
+  expect(result).toMatchInlineSnapshot(`
+    Array [
+      Object {
+        "breakpoints": Set {},
+        "className": "color-gray-0",
+        "cssProp": "color",
+        "value": "#F9FAFB",
       },
-    },
-  })
-
-  expect(result).toEqual([
-    '.color-modes-light-text { color: #000 }',
-    '.color-modes-light-background { color: #FFF }',
-    '.color-modes-dark-text { color: #FFF }',
-    '.color-modes-dark-background { color: #000 }',
-  ])
+      Object {
+        "breakpoints": Set {},
+        "className": "color-gray-1",
+        "cssProp": "color",
+        "value": "#F3F4F6",
+      },
+    ]
+  `)
 })
 
 test('deeply nested array scale', () => {
@@ -141,12 +142,114 @@ test('deeply nested array scale', () => {
     },
   })
 
-  expect(result).toEqual([
-    '.color-modes-light-gray-0 { color: #F9FAFB }',
-    '.color-modes-light-gray-1 { color: #F3F4F6 }',
-    '.color-modes-dark-gray-0 { color: #F3F4F6 }',
-    '.color-modes-dark-gray-1 { color: #F9FAFB }',
-  ])
+  expect(result).toMatchInlineSnapshot(`
+    Array [
+      Object {
+        "breakpoints": Set {},
+        "className": "color-modes-light-gray-0",
+        "cssProp": "color",
+        "value": "#F9FAFB",
+      },
+      Object {
+        "breakpoints": Set {},
+        "className": "color-modes-light-gray-1",
+        "cssProp": "color",
+        "value": "#F3F4F6",
+      },
+      Object {
+        "breakpoints": Set {},
+        "className": "color-modes-dark-gray-0",
+        "cssProp": "color",
+        "value": "#F3F4F6",
+      },
+      Object {
+        "breakpoints": Set {},
+        "className": "color-modes-dark-gray-1",
+        "cssProp": "color",
+        "value": "#F9FAFB",
+      },
+    ]
+  `)
+})
+
+// object scales
+
+test('creates styling data for each object scale increment', () => {
+  const result = getScaleStyles({
+    prop: {
+      name: 'color',
+    },
+    scale: {
+      text: '#fff',
+      background: '#000',
+    },
+  })
+
+  expect(result).toMatchInlineSnapshot(`
+    Array [
+      Object {
+        "breakpoints": Set {},
+        "className": "color-text",
+        "cssProp": "color",
+        "value": "#fff",
+      },
+      Object {
+        "breakpoints": Set {},
+        "className": "color-background",
+        "cssProp": "color",
+        "value": "#000",
+      },
+    ]
+  `)
+})
+
+test('nested object scale', () => {
+  const result = getScaleStyles({
+    prop: {
+      name: 'color',
+    },
+    scale: {
+      modes: {
+        light: {
+          text: '#000',
+          background: '#FFF',
+        },
+        dark: {
+          text: '#FFF',
+          background: '#000',
+        },
+      },
+    },
+  })
+
+  expect(result).toMatchInlineSnapshot(`
+    Array [
+      Object {
+        "breakpoints": Set {},
+        "className": "color-modes-light-text",
+        "cssProp": "color",
+        "value": "#000",
+      },
+      Object {
+        "breakpoints": Set {},
+        "className": "color-modes-light-background",
+        "cssProp": "color",
+        "value": "#FFF",
+      },
+      Object {
+        "breakpoints": Set {},
+        "className": "color-modes-dark-text",
+        "cssProp": "color",
+        "value": "#FFF",
+      },
+      Object {
+        "breakpoints": Set {},
+        "className": "color-modes-dark-background",
+        "cssProp": "color",
+        "value": "#000",
+      },
+    ]
+  `)
 })
 
 test('deeply nested object scale', () => {
@@ -170,22 +273,149 @@ test('deeply nested object scale', () => {
     },
   })
 
-  expect(result).toEqual([
-    '.color-modes-light-gray-50 { color: #F9FAFB }',
-    '.color-modes-dark-gray-50 { color: #F8FAFC }',
-  ])
+  expect(result).toMatchInlineSnapshot(`
+    Array [
+      Object {
+        "breakpoints": Set {},
+        "className": "color-modes-light-gray-50",
+        "cssProp": "color",
+        "value": "#F9FAFB",
+      },
+      Object {
+        "breakpoints": Set {},
+        "className": "color-modes-dark-gray-50",
+        "cssProp": "color",
+        "value": "#F8FAFC",
+      },
+    ]
+  `)
 })
 
-test('omits values unused in project in optimize mode', () => {
-  propUsageCache.set('gap', new Set(['1']))
+// usage
+
+test('includes breakpoint usage', () => {
+  propUsageCache.set('gap', {
+    Component: {
+      all: new Set(['0', '1', '2']),
+      sm: new Set(['2']),
+    },
+  })
 
   const result = getScaleStyles({
     optimize: true,
     prop: {
       name: 'gap',
     },
-    scale: [0, 1],
+    scale: [0, 1, 2],
   })
 
-  expect(result).toEqual(['.gap-1 { gap: 1px }'])
+  expect(result).toMatchInlineSnapshot(`
+    Array [
+      Object {
+        "breakpoints": Set {
+          "all",
+        },
+        "className": "gap-0",
+        "cssProp": "gap",
+        "value": "0",
+      },
+      Object {
+        "breakpoints": Set {
+          "all",
+        },
+        "className": "gap-1",
+        "cssProp": "gap",
+        "value": "1px",
+      },
+      Object {
+        "breakpoints": Set {
+          "all",
+          "sm",
+        },
+        "className": "gap-2",
+        "cssProp": "gap",
+        "value": "2px",
+      },
+    ]
+  `)
+})
+
+test('includes breakpoint usage for both default prop name and prop alias', () => {
+  propUsageCache.set('marginTop', {
+    Component: {
+      all: new Set(['0', '1', '2']),
+      sm: new Set(['2', '4']),
+    },
+  })
+
+  propUsageCache.set('mt', {
+    Component: {
+      all: new Set(['3', '4']),
+      sm: new Set(['5']),
+    },
+  })
+
+  const result = getScaleStyles({
+    optimize: true,
+    prop: {
+      alias: 'mt',
+      name: 'marginTop',
+    },
+    scale: [0, 1, 2, 3, 4, 5],
+  })
+
+  expect(result).toMatchInlineSnapshot(`
+    Array [
+      Object {
+        "breakpoints": Set {
+          "all",
+        },
+        "className": "mt-0",
+        "cssProp": "margin-top",
+        "value": "0",
+      },
+      Object {
+        "breakpoints": Set {
+          "all",
+        },
+        "className": "mt-1",
+        "cssProp": "margin-top",
+        "value": "1px",
+      },
+      Object {
+        "breakpoints": Set {
+          "all",
+          "sm",
+        },
+        "className": "mt-2",
+        "cssProp": "margin-top",
+        "value": "2px",
+      },
+      Object {
+        "breakpoints": Set {
+          "all",
+        },
+        "className": "mt-3",
+        "cssProp": "margin-top",
+        "value": "3px",
+      },
+      Object {
+        "breakpoints": Set {
+          "sm",
+          "all",
+        },
+        "className": "mt-4",
+        "cssProp": "margin-top",
+        "value": "4px",
+      },
+      Object {
+        "breakpoints": Set {
+          "sm",
+        },
+        "className": "mt-5",
+        "cssProp": "margin-top",
+        "value": "5px",
+      },
+    ]
+  `)
 })

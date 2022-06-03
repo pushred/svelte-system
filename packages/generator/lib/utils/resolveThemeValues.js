@@ -1,8 +1,10 @@
 import { propsByAlias, propsByName } from '@svelte-system/props'
-import { flatten, unflatten } from 'flat'
+import flat from 'flat'
 import get from 'lodash.get'
 
 import { defaultTheme } from '../defaultTheme.js'
+
+const { flatten, unflatten } = flat
 
 const THEME_KEYS = Object.keys(defaultTheme)
 

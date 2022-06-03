@@ -3,6 +3,10 @@ export class Cache {
     this.cache = {}
   }
 
+  clear() {
+    this.cache = {}
+  }
+
   /**
    * @param {string} key
    * @returns {any}

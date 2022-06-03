@@ -50,6 +50,7 @@ function getUserConfig(options) {
   const mergedConfig = {
     ...userConfig,
     theme: {
+      breakpoints: userTheme.breakpoints || defaultTheme.breakpoints,
       borders: userTheme.borders || defaultTheme.borders,
       colors: userTheme.colors || defaultTheme.colors,
       components: userTheme.components,
@@ -97,9 +98,8 @@ cli
     const userConfig = getUserConfig(options)
     if (!userConfig) return
 
-    const projectPath = options.projectPath || userConfig.projectPath
-
     const outputPath = options.output || userConfig.componentsPath
+    const projectPath = options.projectPath || userConfig.projectPath
     const relativeOutputPath = relative(resolve('..'), outputPath)
 
     if (options.optimize) {
@@ -152,15 +152,25 @@ cli
 cli
   .command('generate-stylesheet')
   .option('-o --output', 'Path to output generated stylesheet')
-  .action((options) => {
+  .action(async (options) => {
     const userConfig = getUserConfig(options)
     if (!userConfig) return
 
     const outputPath = options.output || userConfig.stylesheetPath
+    const projectPath = options.projectPath || userConfig.projectPath
     const relativeOutputPath = relative(resolve('..'), outputPath)
+
+    if (options.optimize) {
+      await detectPropUsage({
+        outputPath,
+        projectPath,
+        theme: userConfig.theme,
+      })
+    }
 
     generateStylesheet({
       outputPath,
+      optimize: options.optimize,
       theme: userConfig.theme,
     })
 

@@ -8,15 +8,14 @@ import makeDir from 'make-dir'
 // TODO: dynamically import when we can use native ESM in Jest (should be optional peer dep)
 import prettier from 'prettier'
 
-import {
-  eventUsageCache,
-  generatedComponentsCache,
-  propUsageCache,
-} from '../caches.js'
+import { eventUsageCache, generatedComponentsCache } from '../caches.js'
 
 import { events } from '../consts.js'
+import { getPropValueUsage } from '../utils/getPropValueUsage.js'
+import { getScaleClassProps } from '../utils/getScaleClassProps.js'
+import { getValueClassProps } from '../utils/getValueClassProps.js'
+
 import { components as standardComponents } from './components.js'
-import { generateClassProps } from './generateClassProps.js'
 
 /**
  * @typedef { import('@svelte-system/types').ComponentDoc } ComponentDoc
@@ -26,6 +25,31 @@ import { generateClassProps } from './generateClassProps.js'
  * @typedef { import('@svelte-system/types').ThemeScale } ThemeScale
  * @typedef {{ [key: string]: Prop }} PropsByName
  */
+
+/**
+ * @param {object} params
+ * @param {boolean} params.optimize
+ * @param {Prop} params.prop
+ * @param {Theme} params.theme
+ */
+function generateClassProps({ optimize, prop, theme }) {
+  const breakpoints = theme?.breakpoints
+
+  if (prop.scale && theme[prop.scale]) {
+    return getScaleClassProps({
+      breakpoints,
+      optimize,
+      prop,
+      scale: theme[prop.scale],
+    })
+  }
+
+  if (prop.values) {
+    return getValueClassProps({ breakpoints, optimize, prop })
+  }
+
+  return []
+}
 
 /**
  * @param {{ optimize: boolean, outputPath: string, theme: Theme }} options
@@ -67,25 +91,28 @@ export function generateComponents({ optimize, outputPath, theme }) {
       const defaultProps = (theme.components || {})[component.name]
 
       props.forEach((prop) => {
-        const propUsage = propUsageCache.get(prop.name)
-        const valuesInUse = propUsage ? propUsage[component.name] : undefined
-        if (optimize && !valuesInUse) return
+        const propAliasValueUsage = getPropValueUsage(prop.alias)
+        const propNameValueUsage = getPropValueUsage(prop.name)
+
+        if (optimize && !propAliasValueUsage && !propNameValueUsage) return
 
         const defaultValue =
           defaultProps && defaultProps[prop.name]
             ? `'${defaultProps[prop.name]}'`
             : 'undefined'
 
-        exports.push(`export let ${prop.name} = ${defaultValue}`)
-        generatedProps.push(prop.name)
+        if (!optimize || propNameValueUsage) {
+          exports.push(`export let ${prop.name} = ${defaultValue}`)
+          generatedProps.push(prop.name)
+        }
 
-        if (prop.alias) {
+        if (prop.alias && (!optimize || propAliasValueUsage)) {
           exports.push(`export let ${prop.alias} = ${defaultValue}`)
           generatedProps.push(prop.alias)
         }
 
         generatedClassProps.push(
-          ...generateClassProps({ component, optimize, prop, theme })
+          ...generateClassProps({ optimize, prop, theme })
         )
       })
     })

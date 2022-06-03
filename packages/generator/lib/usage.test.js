@@ -14,6 +14,7 @@ const template = `
     propC={[1, '2']}
     propG={cond ? 'a' : 'b'}
     propH={condA ? 'a' : condB ? 'c' : undefined}
+    propI={{ sm: 'a', md: 'b' }}
     on:click={() => {}}
   >
     <ComponentB propC={3} propD={['a', 'b']} on:focus={() => {}} />
@@ -29,13 +30,20 @@ beforeAll(async () => {
     return template
   })
 
+  propUsageCache.clear()
+
   await detectPropUsage({
     outputPath: 'a',
     projectPath: 'b',
     theme: {
+      breakpoints: {
+        sm: '30em',
+        md: '48em',
+      },
       components: {
         ComponentA: {
           propC: [1, 2],
+          propI: { sm: 'c', md: 'd' },
         },
         ComponentB: {
           propC: 4,
@@ -50,7 +58,14 @@ beforeAll(async () => {
 
 test('catalogs attribute prop usage from project files in a cache', () => {
   expect(propUsageCache.getAllKeys()).toEqual(
-    expect.arrayContaining(['propA', 'propB', 'propC'])
+    expect.arrayContaining([
+      'propA',
+      'propB',
+      'propC',
+      'propD',
+      'propE',
+      'propF',
+    ])
   )
 })
 
@@ -61,48 +76,76 @@ test('catalogs attribute prop usage from theme components in a cache', () => {
 })
 
 test('catalogs and normalizes attribute prop value usage per component', () => {
-  expect(propUsageCache.get('propA').ComponentA).toBeInstanceOf(Set)
-  expect(propUsageCache.get('propB').ComponentA).toBeInstanceOf(Set)
-  expect(propUsageCache.get('propC').ComponentA).toBeInstanceOf(Set)
-  expect(propUsageCache.get('propC').ComponentB).toBeInstanceOf(Set)
-  expect(propUsageCache.get('propD').ComponentB).toBeInstanceOf(Set)
-  expect(propUsageCache.get('propE').ComponentB).toBeInstanceOf(Set)
-  expect(propUsageCache.get('propF').ComponentB).toBeInstanceOf(Set)
+  expect(propUsageCache.get('propA').ComponentA.all).toBeInstanceOf(Set)
+  expect(propUsageCache.get('propB').ComponentA.all).toBeInstanceOf(Set)
+  expect(propUsageCache.get('propC').ComponentB.all).toBeInstanceOf(Set)
+  expect(propUsageCache.get('propD').ComponentB.all).toBeInstanceOf(Set)
+  expect(propUsageCache.get('propE').ComponentB.all).toBeInstanceOf(Set)
+  expect(propUsageCache.get('propF').ComponentB.all).toBeInstanceOf(Set)
 
-  expect([...propUsageCache.get('propA').ComponentA]).toEqual(
+  expect([...propUsageCache.get('propA').ComponentA.all]).toEqual(
     expect.arrayContaining(['a'])
   )
 
-  expect([...propUsageCache.get('propB').ComponentA]).toEqual(
+  expect([...propUsageCache.get('propB').ComponentA.all]).toEqual(
     expect.arrayContaining(['1'])
   )
 
-  expect([...propUsageCache.get('propC').ComponentA]).toEqual(
-    expect.arrayContaining(['1', '2'])
-  )
-
-  expect([...propUsageCache.get('propC').ComponentB]).toEqual(
+  expect([...propUsageCache.get('propC').ComponentB.all]).toEqual(
     expect.arrayContaining(['3', '4'])
   )
 
-  expect([...propUsageCache.get('propD').ComponentB]).toEqual(
-    expect.arrayContaining(['a', 'b', 'c'])
+  expect([...propUsageCache.get('propD').ComponentB.all]).toEqual(
+    expect.arrayContaining(['c'])
   )
 
-  expect([...propUsageCache.get('propE').ComponentB]).toEqual(
+  expect([...propUsageCache.get('propE').ComponentB.all]).toEqual(
     expect.arrayContaining(['2'])
   )
 
-  expect([...propUsageCache.get('propF').ComponentB]).toEqual(
+  expect([...propUsageCache.get('propF').ComponentB.all]).toEqual(
     expect.arrayContaining(['a'])
   )
 
-  expect([...propUsageCache.get('propG').ComponentA]).toEqual(
+  expect([...propUsageCache.get('propG').ComponentA.all]).toEqual(
     expect.arrayContaining(['a', 'b'])
   )
 
-  expect([...propUsageCache.get('propH').ComponentA]).toEqual(
+  expect([...propUsageCache.get('propH').ComponentA.all]).toEqual(
     expect.arrayContaining(['a', 'c'])
+  )
+})
+
+test('catalogs and normalizes attribute prop value usage per component breakpoint', () => {
+  expect(propUsageCache.get('propC').ComponentA.sm).toBeInstanceOf(Set)
+  expect(propUsageCache.get('propC').ComponentA.md).toBeInstanceOf(Set)
+  expect(propUsageCache.get('propD').ComponentB.sm).toBeInstanceOf(Set)
+  expect(propUsageCache.get('propD').ComponentB.md).toBeInstanceOf(Set)
+  expect(propUsageCache.get('propI').ComponentA.sm).toBeInstanceOf(Set)
+  expect(propUsageCache.get('propI').ComponentA.md).toBeInstanceOf(Set)
+
+  expect([...propUsageCache.get('propC').ComponentA.sm]).toEqual(
+    expect.arrayContaining(['1'])
+  )
+
+  expect([...propUsageCache.get('propC').ComponentA.md]).toEqual(
+    expect.arrayContaining(['2'])
+  )
+
+  expect([...propUsageCache.get('propD').ComponentB.sm]).toEqual(
+    expect.arrayContaining(['a'])
+  )
+
+  expect([...propUsageCache.get('propD').ComponentB.md]).toEqual(
+    expect.arrayContaining(['b'])
+  )
+
+  expect([...propUsageCache.get('propI').ComponentA.sm]).toEqual(
+    expect.arrayContaining(['c'])
+  )
+
+  expect([...propUsageCache.get('propI').ComponentA.md]).toEqual(
+    expect.arrayContaining(['d'])
   )
 })
 

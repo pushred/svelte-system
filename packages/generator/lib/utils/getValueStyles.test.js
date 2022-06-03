@@ -1,7 +1,11 @@
 import { propUsageCache } from '../caches'
 import { getValueStyles } from './getValueStyles.js'
 
-test('generates a class/style for each value', () => {
+beforeEach(() => {
+  propUsageCache.clear()
+})
+
+test('creates styling data for each value', () => {
   const result = getValueStyles({
     prop: {
       name: 'textAlign',
@@ -9,37 +13,144 @@ test('generates a class/style for each value', () => {
     values: ['left', 'right'],
   })
 
-  expect(result).toEqual([
-    '.text-align-left { text-align: left }',
-    '.text-align-right { text-align: right }',
-  ])
+  expect(result).toMatchInlineSnapshot(`
+    Array [
+      Object {
+        "breakpoints": Set {},
+        "className": "text-align-left",
+        "cssProp": "text-align",
+        "value": "left",
+      },
+      Object {
+        "breakpoints": Set {},
+        "className": "text-align-right",
+        "cssProp": "text-align",
+        "value": "right",
+      },
+    ]
+  `)
 })
 
-test('prop alias', () => {
+test('includes breakpoint usage', () => {
+  propUsageCache.set('textAlign', {
+    Component: {
+      all: new Set(['left', 'center', 'right']),
+      sm: new Set(['center']),
+    },
+  })
+
+  const result = getValueStyles({
+    prop: {
+      name: 'textAlign',
+    },
+    values: ['left', 'center', 'right'],
+  })
+
+  expect(result).toMatchInlineSnapshot(`
+    Array [
+      Object {
+        "breakpoints": Set {
+          "all",
+        },
+        "className": "text-align-left",
+        "cssProp": "text-align",
+        "value": "left",
+      },
+      Object {
+        "breakpoints": Set {
+          "all",
+          "sm",
+        },
+        "className": "text-align-center",
+        "cssProp": "text-align",
+        "value": "center",
+      },
+      Object {
+        "breakpoints": Set {
+          "all",
+        },
+        "className": "text-align-right",
+        "cssProp": "text-align",
+        "value": "right",
+      },
+    ]
+  `)
+})
+
+test('includes breakpoint usage for both default prop name and prop alias', () => {
+  propUsageCache.set('alignItems', {
+    Component: {
+      all: new Set(['start', 'center']),
+      sm: new Set(['end', 'stretch']),
+    },
+  })
+
+  propUsageCache.set('align', {
+    Component: {
+      all: new Set(['stretch', 'space-evenly']),
+      sm: new Set(['fill']),
+    },
+  })
+
   const result = getValueStyles({
     prop: {
       alias: 'align',
       name: 'alignItems',
     },
-    values: ['start', 'end'],
+    values: ['start', 'center', 'end', 'fill', 'space-evenly', 'stretch'],
   })
 
-  expect(result).toEqual([
-    '.align-start { align-items: start }',
-    '.align-end { align-items: end }',
-  ])
-})
-
-test('omits values unused in project in optimize mode', () => {
-  propUsageCache.set('textAlign', new Set(['left']))
-
-  const result = getValueStyles({
-    optimize: true,
-    prop: {
-      name: 'textAlign',
-    },
-    values: ['left', 'right'],
-  })
-
-  expect(result).toEqual(['.text-align-left { text-align: left }'])
+  expect(result).toMatchInlineSnapshot(`
+    Array [
+      Object {
+        "breakpoints": Set {
+          "all",
+        },
+        "className": "align-start",
+        "cssProp": "align-items",
+        "value": "start",
+      },
+      Object {
+        "breakpoints": Set {
+          "all",
+        },
+        "className": "align-center",
+        "cssProp": "align-items",
+        "value": "center",
+      },
+      Object {
+        "breakpoints": Set {
+          "sm",
+        },
+        "className": "align-end",
+        "cssProp": "align-items",
+        "value": "end",
+      },
+      Object {
+        "breakpoints": Set {
+          "sm",
+        },
+        "className": "align-fill",
+        "cssProp": "align-items",
+        "value": "fill",
+      },
+      Object {
+        "breakpoints": Set {
+          "all",
+        },
+        "className": "align-space-evenly",
+        "cssProp": "align-items",
+        "value": "space-evenly",
+      },
+      Object {
+        "breakpoints": Set {
+          "sm",
+          "all",
+        },
+        "className": "align-stretch",
+        "cssProp": "align-items",
+        "value": "stretch",
+      },
+    ]
+  `)
 })

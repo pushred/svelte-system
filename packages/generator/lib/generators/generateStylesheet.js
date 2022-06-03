@@ -12,6 +12,7 @@ import { propUsageCache } from '../caches.js'
 import { getScaleStyles, getValueStyles } from '../utils/index.js'
 
 /**
+ * @typedef { import('@svelte-system/types').Style } Style
  * @typedef { import('@svelte-system/types').Theme } Theme
  */
 
@@ -36,47 +37,61 @@ export function generateStylesheet({ optimize, outputPath, theme }) {
     `,
   ]
 
-  /** @type string[] */
+  /** @type Style[] */
   const styles = []
 
   for (const [_category, props] of Object.entries(propsByCategory)) {
     props.forEach((prop) => {
-      const detectedUsage = propUsageCache.get(prop.name)
+      const detectedUsage =
+        propUsageCache.get(prop.alias) || propUsageCache.get(prop.name)
+
       if (optimize && !detectedUsage) return
 
       if (prop.scale !== undefined && theme[prop.scale] !== undefined) {
-        const generatedStyles = getScaleStyles({
-          optimize,
-          prop,
-          scale: theme[prop.scale],
-        })
-
-        styles.push(...generatedStyles)
+        styles.push(
+          ...getScaleStyles({
+            prop,
+            scale: theme[prop.scale],
+          })
+        )
       }
 
       if (prop.values) {
-        const generatedStyles = getValueStyles({
-          optimize,
-          prop,
-          values: prop.values,
-        })
-
-        styles.push(...generatedStyles)
+        styles.push(
+          ...getValueStyles({
+            prop,
+            values: prop.values,
+          })
+        )
       }
     })
   }
 
-  accumulator.push(...styles)
+  accumulator.push(
+    ...styles
+      .filter((style) => (optimize ? style.breakpoints.has('all') : true))
+      .map(
+        ({ className, cssProp, value }) =>
+          `.${className} { ${cssProp}: ${value} }`
+      )
+  )
 
   for (const [breakpoint, minWidth] of Object.entries(
     theme.breakpoints || {}
   )) {
+    const breakpointStyles = styles
+      .filter((style) => (optimize ? style.breakpoints.has(breakpoint) : true))
+      .map(
+        ({ className, cssProp, value }) =>
+          `.${breakpoint}\\:${className} { ${cssProp}: ${value} }`
+      )
+
+    if (breakpointStyles.length === 0) continue
+
     accumulator.push(`
       @media (min-width: ${minWidth}) {
         \n
-        ${styles
-          .map((style) => style.replace(/^\./, '.' + breakpoint + ':'))
-          .join('\n\n')}
+        ${breakpointStyles.join('\n\n')}
         \n
       }
     `)

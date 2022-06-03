@@ -8,43 +8,11 @@ import { walk } from 'estree-walker'
 import { globby } from 'globby'
 import { parse } from 'svelte/compiler'
 
-import { eventUsageCache, propUsageCache } from './caches.js'
-
-/**
- * @param {{
- *  [key: string]: { [key:string]: string[] }
- * }} catalog
- */
-function cachePropValues(catalog) {
-  for (const [propName, componentUsage] of Object.entries(catalog)) {
-    for (const [componentName, values] of Object.entries(componentUsage)) {
-      const cachedValues = propUsageCache.get(propName) || {}
-
-      propUsageCache.set(propName, {
-        ...cachedValues,
-        [componentName]: cachedValues[componentName]
-          ? new Set([...cachedValues[componentName], ...values])
-          : new Set(values),
-      })
-    }
-  }
-}
-
-/**
- * @param {{
- *  componentName: string;
- *  event: string;
- * }} event
- */
-function cacheEvent({ componentName, event }) {
-  eventUsageCache.set(
-    componentName,
-    new Set([...(eventUsageCache.get(componentName) || []), event])
-  )
-}
+import { accumulateProps, cacheEvent, cachePropValues } from './utils/index.js'
 
 /**
  * @typedef { import('@svelte-system/types').Theme } Theme
+ * @typedef { import('@svelte-system/types').PropUsageCatalog } PropUsageCatalog
  */
 
 /**
@@ -59,32 +27,19 @@ export async function detectPropUsage({ outputPath, projectPath, theme }) {
   const defaultProps = {}
 
   for (const [componentName, props] of Object.entries(theme.components || {})) {
-    for (const [name, value] of Object.entries(props)) {
-      if (
-        Array.isArray(value) &&
-        defaultProps[name] &&
-        Array.isArray(defaultProps[name][componentName])
-      ) {
-        defaultProps[name][componentName].push(
-          ...value.map((v) => v.toString())
-        )
-      } else if (defaultProps[name]) {
-        defaultProps[name][componentName] = Array.isArray(value)
-          ? value.map((v) => v.toString())
-          : [value.toString()]
-      } else {
-        defaultProps[name] = {
-          [componentName]: Array.isArray(value)
-            ? value.map((v) => v.toString())
-            : [value.toString()],
-        }
-      }
+    for (const [propName, propValue] of Object.entries(props)) {
+      accumulateProps(defaultProps, {
+        componentName,
+        propName,
+        propValue,
+        theme,
+      })
     }
   }
 
   cachePropValues(defaultProps)
 
-  // populate cache with props from project file usage
+  // populate cache with props and event handlers used in project
 
   paths.forEach((filePath) => {
     const source = readFileSync(filePath, 'utf-8')
@@ -96,21 +51,9 @@ export async function detectPropUsage({ outputPath, projectPath, theme }) {
         if (node.type !== 'InlineComponent') return
 
         const componentName = node.name
+
+        /** @type PropUsageCatalog */
         const detectedProps = {}
-
-        function catalogPropValue(propName, value) {
-          if (!detectedProps[propName]) detectedProps[propName] = {}
-
-          if (!detectedProps[propName][componentName]) {
-            detectedProps[propName][componentName] = new Set()
-          }
-
-          const stringValue = value.toString()
-          const prop = detectedProps[propName][componentName]
-
-          if (prop.has(stringValue)) return
-          prop.add(stringValue)
-        }
 
         node.attributes.forEach((prop) => {
           if (prop.type === 'EventHandler') {
@@ -129,7 +72,12 @@ export async function detectPropUsage({ outputPath, projectPath, theme }) {
           const value = prop.value[0]
 
           if (value.type === 'Text') {
-            catalogPropValue(propName, value.data)
+            accumulateProps(detectedProps, {
+              componentName,
+              propName,
+              theme,
+              propValue: value.data,
+            })
           }
 
           if (value.type !== 'MustacheTag') return
@@ -138,20 +86,42 @@ export async function detectPropUsage({ outputPath, projectPath, theme }) {
             walk(value, {
               enter(conditionalNode) {
                 if (conditionalNode.type === 'Literal') {
-                  catalogPropValue(propName, conditionalNode.value)
+                  accumulateProps(detectedProps, {
+                    componentName,
+                    propName,
+                    theme,
+                    propValue: conditionalNode.value,
+                  })
                 }
               },
             })
           }
 
           if (value.expression.type === 'Literal') {
-            catalogPropValue(propName, value.expression.value)
+            accumulateProps(detectedProps, {
+              componentName,
+              propName,
+              theme,
+              propValue: value.expression.value,
+            })
           }
 
           if (value.expression.type === 'ArrayExpression') {
+            const arrayValue = value.expression.elements
+              .map((arrayNode) => {
+                if (arrayNode.type === 'Literal') return arrayNode.value
+                return null
+              })
+              .filter(Boolean)
+
             value.expression.elements.forEach((arrayNode) => {
               if (arrayNode.type === 'Literal') {
-                catalogPropValue(propName, arrayNode.value)
+                accumulateProps(detectedProps, {
+                  componentName,
+                  propName,
+                  theme,
+                  propValue: arrayValue,
+                })
               }
             })
           }

@@ -1,41 +1,37 @@
 import kebabCase from 'lodash.kebabcase'
 
-import { propUsageCache } from '../caches.js'
+import { getPropValueUsage } from './getPropValueUsage.js'
 
 /**
  * @typedef { import('@svelte-system/types').Prop } Prop
+ * @typedef { import('@svelte-system/types').Style } Style
  */
 
 /**
  * @param {Object} params
- * @param {Boolean} params.optimize
  * @param {Prop} params.prop
  * @param {string[]} params.values
+ * @returns {Style[]}
  */
-
-export function getValueStyles({ optimize, prop, values }) {
+export function getValueStyles({ prop, values }) {
   const classPrefix = prop.alias || prop.name
-  const cssProp = kebabCase(prop.name)
-  const valuesInUse = propUsageCache.get(prop.name) || new Set()
+  const propValueUsage = getPropValueUsage(prop.name)
+  const aliasPropValueUsage = getPropValueUsage(prop.alias)
 
-  /** @type string[] */
+  /** @type Style[] */
   const styles = []
 
-  values.forEach((value) => {
-    if (optimize && !valuesInUse.has(value.toString())) {
-      return
-    }
-
-    /** @type string[] */
-    const conditions = []
-
-    conditions.push(`${prop.name} === '${value}'`)
-    if (prop.alias) conditions.push(`${prop.alias} === '${value}'`)
-
-    const className = kebabCase(`${classPrefix}-${value}`)
-
-    styles.push(`.${className} { ${cssProp}: ${value} }`)
-  })
+  for (const value of values) {
+    styles.push({
+      value,
+      breakpoints: new Set([
+        ...(propValueUsage?.[value] || new Set()),
+        ...(aliasPropValueUsage?.[value] || new Set()),
+      ]),
+      className: kebabCase(`${classPrefix}-${value}`),
+      cssProp: kebabCase(prop.name),
+    })
+  }
 
   return styles
 }
