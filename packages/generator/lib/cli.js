@@ -22,6 +22,7 @@ cli.option('-c --config', 'Path to config file')
 cli
   .command('generate')
   .option('--optimize', 'Omit unused props and prop values')
+  .option('--watch', 'Watch config file and re-generate on changes')
   .option('--components-path', 'Path to output generated components')
   .option('--docs-path', 'Path to output generated docs')
   .option('--project-path', 'Root path to project’s Svelte files for usage detection')
@@ -32,6 +33,7 @@ cli
 cli
   .command('generate-components')
   .option('--optimize', 'Omit unused props and prop values')
+  .option('--watch', 'Watch config file and re-generate on changes')
   .option('--project-path', 'Root path to project’s Svelte files for usage detection')
   .option('-o --output', 'Path to output generated components')
   .action(generateComponentsCommand)
@@ -40,12 +42,14 @@ cli
 cli
   .command('generate-docs')
   .option('-o --output', 'Path to output generated docs')
+  .option('--watch', 'Watch config file and re-generate on changes')
   .action(generateDocsCommand)
 
 // prettier-ignore
 cli
   .command('generate-stylesheet')
   .option('-o --output', 'Path to output generated stylesheet')
+  .option('--watch', 'Watch config file and re-generate on changes')
   .option('--components-path', 'Path to output generated components')
   .action(generateStylesheetCommand)
 

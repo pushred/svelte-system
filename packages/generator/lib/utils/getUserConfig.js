@@ -18,7 +18,7 @@ function lowerFirst(string = '') {
 
 /**
  * @param { CliOptions } options
- * @returns { UserConfig | null | void }
+ * @returns {{ userConfig: UserConfig | null, userConfigPath: string | null }}
  */
 export function getUserConfig(options) {
   const explorer = cosmiconfigSync('svelte-system')
@@ -34,6 +34,7 @@ export function getUserConfig(options) {
   }
 
   const userConfig = explorerResult.config
+  const userConfigPath = explorerResult.filepath
   const userTheme = userConfig.theme
 
   const mergedConfig = {
@@ -60,7 +61,13 @@ export function getUserConfig(options) {
   try {
     assert(mergedConfig, Config)
   } catch (err) {
-    if (!(err instanceof StructError)) return logger.error(err)
+    if (!(err instanceof StructError)) {
+      logger.error(err)
+      return {
+        userConfig: null,
+        userConfigPath: null,
+      }
+    }
 
     logger.error(
       new Error(`Provided configuration is invalid, ${lowerFirst(err.message)}`)
@@ -68,8 +75,14 @@ export function getUserConfig(options) {
 
     logger.object(mergedConfig)
 
-    return null
+    return {
+      userConfig: null,
+      userConfigPath: null,
+    }
   }
 
-  return mergedConfig
+  return {
+    userConfigPath,
+    userConfig: mergedConfig,
+  }
 }
