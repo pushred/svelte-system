@@ -5,6 +5,7 @@ import { assert, StructError } from 'superstruct'
 import { Config } from '@svelte-system/types/validation.js'
 
 import { defaultTheme } from '../defaultTheme.js'
+import { logger } from '../cli/logger.js'
 
 /**
  * @typedef { import('@svelte-system/types').CliOptions } CliOptions
@@ -59,14 +60,13 @@ export function getUserConfig(options) {
   try {
     assert(mergedConfig, Config)
   } catch (err) {
-    if (!(err instanceof StructError)) return console.error(err)
+    if (!(err instanceof StructError)) return logger.error(err)
 
-    console.error(
-      chalk.red('✘'),
-      `Provided configuration is invalid, ${lowerFirst(err.message)}`
+    logger.error(
+      new Error(`Provided configuration is invalid, ${lowerFirst(err.message)}`)
     )
 
-    console.dir(mergedConfig, { depth: null })
+    logger.object(mergedConfig)
 
     return null
   }

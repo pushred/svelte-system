@@ -1,9 +1,7 @@
 import { relative, resolve } from 'path'
 
-import chalk from 'chalk'
-
+import { logger } from './logger.js'
 import { generateStylesheet } from '../generators/generateStylesheet.js'
-
 import { detectPropUsage } from '../usage.js'
 import { getUserConfig } from '../utils/getUserConfig.js'
 
@@ -28,13 +26,10 @@ export async function generateStylesheetCommand(options) {
   }
 
   generateStylesheet({
-    outputPath: stylesheetPath,
     optimize: options.optimize,
+    outputPath: stylesheetPath,
     theme: userConfig.theme,
   })
 
-  console.log(
-    chalk.green('✔'),
-    `stylesheet generated and saved to ${relativeOutputPath}`
-  )
+  logger.success(`stylesheet generated and saved to ${relativeOutputPath}`)
 }

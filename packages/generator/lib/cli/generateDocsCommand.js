@@ -1,9 +1,8 @@
 import { relative, resolve } from 'path'
 
-import chalk from 'chalk'
-
 import { buildDocs } from '@svelte-system/docs'
 
+import { logger } from './logger.js'
 import { generateDocs } from '../generators/generateDocs.js'
 import { getUserConfig } from '../utils/getUserConfig.js'
 
@@ -26,8 +25,5 @@ export async function generateDocsCommand(options) {
     outputPath: docsPath,
   })
 
-  console.log(
-    chalk.green('✔'),
-    `component docs generated and saved to ${relativeOutputPath}`
-  )
+  logger.success(`component docs generated and saved to ${relativeOutputPath}`)
 }

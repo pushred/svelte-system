@@ -1,9 +1,7 @@
 import { relative, resolve } from 'path'
 
-import chalk from 'chalk'
-
+import { logger } from './logger.js'
 import { generateComponents } from '../generators/generateComponents.js'
-
 import { detectPropUsage } from '../usage.js'
 import { getUserConfig } from '../utils/getUserConfig.js'
 
@@ -26,13 +24,12 @@ export async function generateComponentsCommand(options) {
   }
 
   const components = generateComponents({
-    outputPath: componentsPath,
     optimize: options.optimize,
+    outputPath: componentsPath,
     theme: userConfig.theme,
   })
 
-  console.log(
-    chalk.green('✔'),
+  logger.success(
     `${components.length} components generated and saved to ${relativeOutputPath}`
   )
 }
