@@ -4,6 +4,7 @@ const config = {
   componentsPath: join(__dirname, 'src', 'components'),
   docsPath: join(__dirname, 'docs'),
   projectPath: join(__dirname, 'src'),
+  stylesheetPath: join(__dirname, 'src', 'system.css'),
   theme: {
     space: {
       //0.5: '0.125rem',

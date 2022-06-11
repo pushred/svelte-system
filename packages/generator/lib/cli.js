@@ -1,183 +1,52 @@
 #!/usr/bin/env node
 
-import { relative, resolve } from 'path'
-
-import { buildDocs } from '@svelte-system/docs'
-import { Config } from '@svelte-system/types/validation.js'
-import chalk from 'chalk'
-import { cosmiconfigSync } from 'cosmiconfig'
 import sade from 'sade'
-import { assert, StructError } from 'superstruct'
-
-import { defaultTheme } from './defaultTheme.js'
-import { detectPropUsage } from './usage.js'
 
 import {
-  generateComponents,
-  generateDocs,
-  generateStylesheet,
-} from './generators/index.js'
+  generateCommand,
+  generateComponentsCommand,
+  generateDocsCommand,
+  generateStylesheetCommand,
+} from './cli/index.js'
 
 /**
  * @typedef { import('@svelte-system/types').CliOptions } CliOptions
  * @typedef { import('@svelte-system/types').Config } UserConfig
  */
 
-function lowerFirst(string = '') {
-  return `${string.charAt(0).toLowerCase()}${string.slice(1)}`
-}
-
-/**
- * @param { CliOptions } options
- * @returns { UserConfig | null | void }
- */
-function getUserConfig(options) {
-  const explorer = cosmiconfigSync('svelte-system')
-
-  const explorerResult = options.config
-    ? explorer.load(options.config)
-    : explorer.search()
-
-  if (explorerResult === null) {
-    throw new Error(
-      'Could not find required configuration, see README for details'
-    )
-  }
-
-  const userConfig = explorerResult.config
-  const userTheme = userConfig.theme
-
-  const mergedConfig = {
-    ...userConfig,
-    theme: {
-      breakpoints: userTheme.breakpoints || defaultTheme.breakpoints,
-      borders: userTheme.borders || defaultTheme.borders,
-      colors: userTheme.colors || defaultTheme.colors,
-      components: userTheme.components,
-      fonts: userTheme.fonts || defaultTheme.fonts,
-      fontSizes: userTheme.fontSizes || defaultTheme.fontSizes,
-      fontWeights: userTheme.fontWeights || defaultTheme.fontWeights,
-      letterSpacings: userTheme.letterSpacings || defaultTheme.letterSpacings,
-      lineHeights: userTheme.lineHeights || defaultTheme.lineHeights,
-      radii: userTheme.radii || defaultTheme.radii,
-      sizes: userTheme.sizes || defaultTheme.sizes,
-      space: userTheme.space || defaultTheme.space,
-      flexGrow: userTheme.flexGrow || defaultTheme.flexGrow,
-      flexShrink: userTheme.flexShrink || defaultTheme.flexShrink,
-      order: userTheme.order || defaultTheme.order,
-    },
-  }
-
-  try {
-    assert(mergedConfig, Config)
-  } catch (err) {
-    if (!(err instanceof StructError)) return console.error(err)
-
-    console.error(
-      chalk.red('✘'),
-      `Provided configuration is invalid, ${lowerFirst(err.message)}`
-    )
-
-    console.dir(mergedConfig, { depth: null })
-
-    return null
-  }
-
-  return mergedConfig
-}
-
 const cli = sade('svelte-system')
 
 cli.option('-c --config', 'Path to config file')
 
+// prettier-ignore
+cli
+  .command('generate')
+  .option('--optimize', 'Omit unused props and prop values')
+  .option('--components-path', 'Path to output generated components')
+  .option('--docs-path', 'Path to output generated docs')
+  .option('--project-path', 'Root path to project’s Svelte files for usage detection')
+  .option('--stylesheet-path', 'Path to output generated stylesheet')
+  .action(generateCommand)
+
+// prettier-ignore
 cli
   .command('generate-components')
   .option('--optimize', 'Omit unused props and prop values')
+  .option('--project-path', 'Root path to project’s Svelte files for usage detection')
   .option('-o --output', 'Path to output generated components')
-  .action(async (options) => {
-    const userConfig = getUserConfig(options)
-    if (!userConfig) return
+  .action(generateComponentsCommand)
 
-    const outputPath = options.output || userConfig.componentsPath
-    const projectPath = options.projectPath || userConfig.projectPath
-    const relativeOutputPath = relative(resolve('..'), outputPath)
-
-    if (options.optimize) {
-      await detectPropUsage({
-        outputPath,
-        projectPath,
-        theme: userConfig.theme,
-      })
-    }
-
-    const components = generateComponents({
-      outputPath,
-      optimize: options.optimize,
-      theme: userConfig.theme,
-    })
-
-    console.log(
-      chalk.green('✔'),
-      `${components.length} components generated and saved to ${relativeOutputPath}`
-    )
-  })
-
+// prettier-ignore
 cli
-  .command('generate-docs [componentsPath]')
+  .command('generate-docs')
   .option('-o --output', 'Path to output generated docs')
-  .action(async (componentsPathArg, options) => {
-    const userConfig = getUserConfig(options)
-    if (!userConfig) return
+  .action(generateDocsCommand)
 
-    const componentsPath = componentsPathArg
-      ? resolve(process.cwd(), componentsPathArg)
-      : options.componentsPath || userConfig.componentsPath
-
-    const outputPath = options.output || userConfig.docsPath
-    const relativeOutputPath = relative(resolve('..'), outputPath)
-
-    const componentDocs = await generateDocs({
-      componentsPath,
-      theme: userConfig.theme,
-    })
-
-    await buildDocs({ components: componentDocs, outputPath })
-
-    console.log(
-      chalk.green('✔'),
-      `Component docs generated and saved to ${relativeOutputPath}`
-    )
-  })
-
+// prettier-ignore
 cli
   .command('generate-stylesheet')
   .option('-o --output', 'Path to output generated stylesheet')
-  .action(async (options) => {
-    const userConfig = getUserConfig(options)
-    if (!userConfig) return
-
-    const outputPath = options.output || userConfig.stylesheetPath
-    const projectPath = options.projectPath || userConfig.projectPath
-    const relativeOutputPath = relative(resolve('..'), outputPath)
-
-    if (options.optimize) {
-      await detectPropUsage({
-        outputPath,
-        projectPath,
-        theme: userConfig.theme,
-      })
-    }
-
-    generateStylesheet({
-      outputPath,
-      optimize: options.optimize,
-      theme: userConfig.theme,
-    })
-
-    console.log(
-      chalk.green('✔'),
-      `Stylesheet generated and saved to ${relativeOutputPath}`
-    )
-  })
+  .option('--components-path', 'Path to output generated components')
+  .action(generateStylesheetCommand)
 
 cli.parse(process.argv)

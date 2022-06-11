@@ -16,11 +16,11 @@ import { accumulateProps, cacheEvent, cachePropValues } from './utils/index.js'
  */
 
 /**
- * @param {{ outputPath: string, projectPath: string, theme: Theme }} options
+ * @param {{ componentsPath: string, projectPath: string, theme: Theme }} options
  */
-export async function detectPropUsage({ outputPath, projectPath, theme }) {
+export async function detectPropUsage({ componentsPath, projectPath, theme }) {
   const globPath = resolve(projectPath, '**', '*.svelte')
-  const paths = await globby([globPath, `!${outputPath}`])
+  const paths = await globby([globPath, `!${componentsPath}`])
 
   // populate cache with default props from configured theme components
 
