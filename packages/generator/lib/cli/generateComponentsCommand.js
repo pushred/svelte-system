@@ -3,21 +3,38 @@ import { relative, resolve } from 'path'
 import chokidar from 'chokidar'
 
 import { logger } from './logger.js'
+import { cosmiconfig } from '../caches.js'
 import { generateComponents } from '../generators/generateComponents.js'
 import { detectPropUsage } from '../usage.js'
 import { getUserConfig } from '../utils/getUserConfig.js'
 
-export async function generateComponentsCommand(options, disableWatch = false) {
-  const { userConfig, userConfigPath } = getUserConfig(options)
-  if (!userConfig) return
+/**
+ * @typedef { import('@svelte-system/types/cli').GenerateComponentsCommandOptions } GenerateComponentsCommandOptions
+ */
 
-  const componentsPath =
-    options.output || options.componentsPath || userConfig.componentsPath
+/**
+ * @param {GenerateComponentsCommandOptions} cmdOptions
+ * @returns {Promise<void>}
+ */
+export async function generateComponentsCommand(cmdOptions) {
+  const { userConfig, userConfigPath } = getUserConfig(cmdOptions)
 
-  const projectPath = options.projectPath || userConfig.projectPath
-  const relativeOutputPath = relative(resolve('..'), componentsPath)
+  if (userConfig === null) {
+    throw new Error(`Failed to read config file at ${userConfigPath}`)
+  }
 
-  if (options.optimize) {
+  const componentsPath = cmdOptions.output || userConfig.componentsPath
+  const projectPath = cmdOptions.projectPath || userConfig.projectPath
+
+  if (!componentsPath) {
+    throw new Error('Required output path is not specified')
+  }
+
+  if (cmdOptions.optimize && !projectPath) {
+    throw new Error('Optimize mode requires the project path to be specified')
+  }
+
+  if (cmdOptions.optimize) {
     await detectPropUsage({
       componentsPath,
       projectPath,
@@ -25,22 +42,31 @@ export async function generateComponentsCommand(options, disableWatch = false) {
     })
   }
 
-  const components = generateComponents({
-    optimize: options.optimize,
+  const generatorOptions = {
+    optimize: cmdOptions.optimize,
     outputPath: componentsPath,
     theme: userConfig.theme,
-  })
+  }
+
+  const components = generateComponents(generatorOptions)
+  const relativeOutputPath = relative(resolve('..'), componentsPath)
 
   logger.success(
     `${components.length} components generated and saved to ${relativeOutputPath}`
   )
 
-  if (disableWatch === false && options.watch) {
+  if (cmdOptions.watch) {
     logger.wait('watching for changes')
     chokidar
       .watch(userConfigPath, { ignoreInitial: true })
       .on('all', async () => {
-        await generateComponents(options)
+        console.clear()
+        cosmiconfig.clearCaches()
+        const { userConfig: refreshedUserConfig } = getUserConfig(cmdOptions)
+        generateComponents({
+          ...generatorOptions,
+          theme: refreshedUserConfig.theme,
+        })
       })
   }
 }

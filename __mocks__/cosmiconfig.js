@@ -3,6 +3,7 @@ const { join } = require('path')
 
 function cosmiconfigSync() {
   return {
+    clearCaches: jest.fn(),
     search: () => {
       return {
         config: {

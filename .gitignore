@@ -10,8 +10,9 @@
 build
 dist
 node_modules
-package
+packages/docs/vite-root/src/components.json
 web/src/components
+web/src/system.css
 web/docs
 
 .DS_Store

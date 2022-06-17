@@ -14,7 +14,7 @@ import * as svelte from 'svelte/compiler'
  */
 
 /** @param {{ componentsPath: string, theme: Theme }} options */
-export async function generateDocs({ componentsPath, theme }) {
+export function generateDocs({ componentsPath, theme }) {
   const componentFiles = readdirSync(componentsPath)
 
   /** @type {ComponentDoc[]} */

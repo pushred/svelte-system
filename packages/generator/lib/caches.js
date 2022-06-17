@@ -1,3 +1,5 @@
+import { cosmiconfigSync } from 'cosmiconfig'
+
 export class Cache {
   constructor() {
     this.cache = {}
@@ -34,6 +36,7 @@ export class Cache {
   }
 }
 
+export const cosmiconfig = cosmiconfigSync('svelte-system')
 export const eventUsageCache = new Cache()
 export const generatedComponentsCache = new Cache()
 export const propUsageCache = new Cache()

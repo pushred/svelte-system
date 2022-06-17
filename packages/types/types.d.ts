@@ -30,15 +30,6 @@ type PropCategory =
   | 'space'
   | 'typography'
 
-type CliOptions = {
-  config: string
-  componentsPath: string
-  optimize: boolean
-  projectPath: string
-  stylesheetPath: string
-  output: string
-}
-
 type ComponentDoc = {
   name: string
   props: Prop[]

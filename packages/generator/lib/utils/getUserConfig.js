@@ -1,14 +1,13 @@
-import chalk from 'chalk'
-import { cosmiconfigSync } from 'cosmiconfig'
 import { assert, StructError } from 'superstruct'
 
 import { Config } from '@svelte-system/types/validation.js'
 
+import { cosmiconfig } from '../caches.js'
 import { defaultTheme } from '../defaultTheme.js'
 import { logger } from '../cli/logger.js'
 
 /**
- * @typedef { import('@svelte-system/types').CliOptions } CliOptions
+ * @typedef { import('@svelte-system/types/cli').SharedCommandOptions } CliOptions
  * @typedef { import('@svelte-system/types').Config } UserConfig
  */
 
@@ -21,11 +20,9 @@ function lowerFirst(string = '') {
  * @returns {{ userConfig: UserConfig | null, userConfigPath: string | null }}
  */
 export function getUserConfig(options) {
-  const explorer = cosmiconfigSync('svelte-system')
-
   const explorerResult = options.config
-    ? explorer.load(options.config)
-    : explorer.search()
+    ? cosmiconfig.load(options.config)
+    : cosmiconfig.search()
 
   if (explorerResult === null) {
     throw new Error(

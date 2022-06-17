@@ -5,22 +5,44 @@ import chokidar from 'chokidar'
 import { buildDocs } from '@svelte-system/docs'
 
 import { logger } from './logger.js'
+import { cosmiconfig } from '../caches.js'
 import { generateDocs } from '../generators/generateDocs.js'
 import { getUserConfig } from '../utils/getUserConfig.js'
 
-export async function generateDocsCommand(options, disableWatch = false) {
-  const { userConfig, userConfigPath } = getUserConfig(options)
-  if (!userConfig) return
+/**
+ * @typedef { import('@svelte-system/types/cli').GenerateDocsCommandOptions } GenerateDocsCommandOptions
+ */
 
-  const componentsPath = options.componentsPath || userConfig.componentsPath
-  const docsPath = options.output || options.docsPath || userConfig.docsPath
+/**
+ * @param {GenerateDocsCommandOptions} cmdOptions
+ * @returns {Promise<void>}
+ */
+export async function generateDocsCommand(cmdOptions) {
+  const { userConfig, userConfigPath } = getUserConfig(cmdOptions)
+
+  if (userConfig === null) {
+    throw new Error(`Failed to read config file at ${userConfigPath}`)
+  }
+
+  const componentsPath = cmdOptions.componentsPath || userConfig.componentsPath
+  const docsPath = cmdOptions.output || userConfig.docsPath
+
+  if (!componentsPath) {
+    throw new Error('Required components path is not specified')
+  }
+
+  if (!docsPath) {
+    throw new Error('Required output path is not specified')
+  }
 
   const relativeOutputPath = relative(resolve('..'), docsPath)
 
-  const componentDocs = await generateDocs({
+  const generatorOptions = {
     componentsPath,
     theme: userConfig.theme,
-  })
+  }
+
+  const componentDocs = await generateDocs(generatorOptions)
 
   await buildDocs({
     components: componentDocs,
@@ -29,12 +51,18 @@ export async function generateDocsCommand(options, disableWatch = false) {
 
   logger.success(`component docs generated and saved to ${relativeOutputPath}`)
 
-  if (disableWatch === false && options.watch) {
+  if (cmdOptions.watch) {
     logger.wait('watching for changes')
     chokidar
       .watch(userConfigPath, { ignoreInitial: true })
       .on('all', async () => {
-        await generateDocs(options)
+        console.clear()
+        cosmiconfig.clearCaches()
+        const { userConfig: refreshedUserConfig } = getUserConfig(cmdOptions)
+        await generateDocs({
+          ...generatorOptions,
+          theme: refreshedUserConfig.theme,
+        })
       })
   }
 }
