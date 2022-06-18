@@ -7,6 +7,18 @@ const overflowValues = ['auto', 'clip', 'hidden', 'scroll', 'visible']
 /** @type { Prop[] } */
 export const props = [
   {
+    name: 'columnCount',
+    scale: 'columns',
+  },
+  {
+    name: 'columnWidth',
+    scale: 'space',
+  },
+  {
+    name: 'columnGap',
+    scale: 'space',
+  },
+  {
     alias: 'd',
     name: 'display',
     values: [
@@ -22,6 +34,10 @@ export const props = [
     ],
   },
   {
+    name: 'gap',
+    scale: 'space',
+  },
+  {
     name: 'overflow',
     values: overflowValues,
   },
@@ -32,6 +48,10 @@ export const props = [
   {
     name: 'overflowY',
     values: overflowValues,
+  },
+  {
+    name: 'rowGap',
+    scale: 'space',
   },
   {
     name: 'verticalAlign',
