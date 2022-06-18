@@ -154,6 +154,19 @@ export function generateComponents({ optimize, outputPath, theme }) {
     )
   })
 
+  const indexTemplate = componentsToGenerate
+    .map(
+      (component) =>
+        `export { default as ${component.name} } from './${component.name}.svelte'`
+    )
+    .join('\n')
+
+  writeFileSync(
+    join(outputPath, 'index.js'),
+    // TODO: wrap this in a try/catch once we can use native ESM in Jest
+    prettier.format(indexTemplate, { filepath: 'index.js' })
+  )
+
   // return config for logging purposes
   return componentsToGenerate
 }

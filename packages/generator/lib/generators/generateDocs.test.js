@@ -32,7 +32,7 @@ beforeAll(async () => {
     theme: mockConfig.theme,
   })
 
-  content = await generateDocs({
+  content = generateDocs({
     componentsPath: mockConfig.outputPath,
     outputPath: mockConfig.outputPath,
     theme: mockConfig.theme,

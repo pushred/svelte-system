@@ -29,6 +29,14 @@ beforeAll(() => {
 
 afterAll(async () => del(mockConfig.outputPath))
 
+test('index file', async () => {
+  const index = await import(join(mockConfig.outputPath, 'index.js'))
+
+  expect(Object.keys(index)).toEqual(
+    expect.arrayContaining(['Body', 'Box', 'Flex', 'Text'])
+  )
+})
+
 test('default tag', async () => {
   const Box = await import(join(mockConfig.outputPath, 'Box.svelte'))
 

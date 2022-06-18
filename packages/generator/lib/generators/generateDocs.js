@@ -1,7 +1,8 @@
-import { readdirSync, readFileSync } from 'fs'
-import { basename, join } from 'path'
+import { readFileSync } from 'fs'
+import { basename, join, posix } from 'path'
 
 import { propsByName } from '@svelte-system/props'
+import { globbySync } from 'globby'
 import * as svelte from 'svelte/compiler'
 
 /**
@@ -15,18 +16,17 @@ import * as svelte from 'svelte/compiler'
 
 /** @param {{ componentsPath: string, theme: Theme }} options */
 export function generateDocs({ componentsPath, theme }) {
-  const componentFiles = readdirSync(componentsPath)
+  const componentFiles = globbySync(posix.join(componentsPath, '*.svelte'))
 
   /** @type {ComponentDoc[]} */
   const componentDocs = []
 
-  componentFiles.forEach((filename) => {
-    const path = join(componentsPath, filename)
-    const source = readFileSync(path, { encoding: 'utf-8' })
+  componentFiles.forEach((componentPath) => {
+    const source = readFileSync(componentPath, { encoding: 'utf-8' })
     const compilerResult = svelte.compile(source, {})
 
     componentDocs.push({
-      name: basename(filename, '.svelte'),
+      name: basename(componentPath, '.svelte'),
       props: compilerResult.vars
         .map((prop) => propsByName[prop.name])
         .filter(Boolean)

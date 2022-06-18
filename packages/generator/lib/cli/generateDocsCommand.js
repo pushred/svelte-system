@@ -42,7 +42,7 @@ export async function generateDocsCommand(cmdOptions) {
     theme: userConfig.theme,
   }
 
-  const componentDocs = await generateDocs(generatorOptions)
+  const componentDocs = generateDocs(generatorOptions)
 
   await buildDocs({
     components: componentDocs,
@@ -59,7 +59,7 @@ export async function generateDocsCommand(cmdOptions) {
         console.clear()
         cosmiconfig.clearCaches()
         const { userConfig: refreshedUserConfig } = getUserConfig(cmdOptions)
-        await generateDocs({
+        generateDocs({
           ...generatorOptions,
           theme: refreshedUserConfig.theme,
         })
