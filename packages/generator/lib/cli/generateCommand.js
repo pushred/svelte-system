@@ -18,11 +18,6 @@ import {
 
 const isTest = process.env.NODE_ENV === 'test'
 
-if (!isTest) {
-  readline.emitKeypressEvents(process.stdin)
-  process.stdin.setRawMode(true)
-}
-
 /**
  * @typedef { import('@svelte-system/types').Config } UserConfig
  * @typedef { import('@svelte-system/types/cli').GenerateCommandOptions } GenerateCommandOptions
@@ -108,7 +103,9 @@ export async function generateCommand(cmdOptions) {
 
   await generate(cmdOptions, userConfig)
 
-  if (!isTest) {
+  if (!isTest && cmdOptions.watch) {
+    readline.emitKeypressEvents(process.stdin)
+    process.stdin.setRawMode(true)
     process.stdin.on('keypress', (_, key) => {
       if (
         key.name === 'q' ||
