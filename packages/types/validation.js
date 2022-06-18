@@ -168,6 +168,7 @@ export const Theme = type({
   flexGrow: optional(array(number())),
   flexShrink: optional(array(number())),
   order: optional(array(number())),
+  zIndices: optional(array(number())),
 
   components: optional(
     record(
