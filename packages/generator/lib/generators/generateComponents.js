@@ -1,21 +1,22 @@
 import { writeFileSync } from 'fs'
 import { join } from 'path'
 
-import { propsByCategory } from '@svelte-system/props'
+import { allProps, propsByCategory } from '@svelte-system/props'
 import makeDir from 'make-dir'
 
 // Intentionally undeclared dep, should use project's own Prettier installation
 // TODO: dynamically import when we can use native ESM in Jest (should be optional peer dep)
 import prettier from 'prettier'
 
+import { components as standardComponents } from './components.js'
+import { generateTypes } from './generateTypes.js'
 import { eventUsageCache, generatedComponentsCache } from '../caches.js'
-
 import { events } from '../consts.js'
 import { getPropValueUsage } from '../utils/getPropValueUsage.js'
 import { getScaleClassProps } from '../utils/getScaleClassProps.js'
 import { getValueClassProps } from '../utils/getValueClassProps.js'
 
-import { components as standardComponents } from './components.js'
+import { getPropScaleTypeName, getPropValuesTypeName } from './generateTypes.js'
 
 /**
  * @typedef { import('@svelte-system/types').ComponentDoc } ComponentDoc
@@ -86,14 +87,22 @@ export function generateComponents({ optimize, outputPath, theme }) {
     /** @type string[] */
     const generatedProps = []
 
+    /** @type string[] */
+    const generatedPropTypes = []
+
+    /** @type Set<string> */
+    const requiredTypes = new Set()
+
     component.props.forEach((category) => {
       const props = propsByCategory[category]
       const defaultProps = (theme.components || {})[component.name]
 
       props.forEach((prop) => {
+        const hasScaleConfig = prop.scale && theme[prop.scale]
         const propAliasValueUsage = getPropValueUsage(prop.alias)
         const propNameValueUsage = getPropValueUsage(prop.name)
 
+        if (!prop.values && !hasScaleConfig) return
         if (optimize && !propAliasValueUsage && !propNameValueUsage) return
 
         const defaultValue =
@@ -101,14 +110,22 @@ export function generateComponents({ optimize, outputPath, theme }) {
             ? `'${defaultProps[prop.name]}'`
             : 'undefined'
 
+        const typeName = prop.scale
+          ? getPropScaleTypeName(prop.scale)
+          : getPropValuesTypeName(prop.name)
+
         if (!optimize || propNameValueUsage) {
           exports.push(`export let ${prop.name} = ${defaultValue}`)
           generatedProps.push(prop.name)
+          generatedPropTypes.push(`${prop.name}?: ${typeName}`)
+          requiredTypes.add(typeName)
         }
 
         if (prop.alias && (!optimize || propAliasValueUsage)) {
           exports.push(`export let ${prop.alias} = ${defaultValue}`)
           generatedProps.push(prop.alias)
+          generatedPropTypes.push(`${prop.alias}?: ${typeName}`)
+          requiredTypes.add(typeName)
         }
 
         generatedClassProps.push(
@@ -127,9 +144,11 @@ export function generateComponents({ optimize, outputPath, theme }) {
 
     generatedComponentsCache.set(component.name, { generatedProps })
 
+    // write component
+
     const tagName = (theme.components || {})[component.name]?.as || 'div'
 
-    const template = `
+    const componentTemplate = `
       <script>
         export let as = '${tagName}'
         export let testId = undefined
@@ -150,7 +169,31 @@ export function generateComponents({ optimize, outputPath, theme }) {
     writeFileSync(
       join(outputPath, component.filename),
       // TODO: wrap this in a try/catch once we can use native ESM in Jest
-      prettier.format(template, { filepath: component.filename })
+      prettier.format(componentTemplate, { filepath: component.filename })
+    )
+
+    // write type definitions
+
+    const typeImports = [...requiredTypes].join(', ')
+
+    // prettier-ignore
+    const typeDefinitionTemplate = `
+      import { SvelteComponentTyped } from 'svelte'
+      import { ${typeImports} } from './types'
+
+      export interface ${component.name}Props {
+        ${generatedPropTypes.join('\n')}
+      }
+
+      export default class ${component.name} extends SvelteComponentTyped<BoxProps, {}, {}> {}
+    `
+
+    writeFileSync(
+      join(outputPath, `${component.filename}.d.ts`),
+      // TODO: wrap this in a try/catch once we can use native ESM in Jest
+      prettier.format(typeDefinitionTemplate, {
+        filepath: `${component.filename}.d.ts`,
+      })
     )
   })
 
@@ -165,6 +208,14 @@ export function generateComponents({ optimize, outputPath, theme }) {
     join(outputPath, 'index.js'),
     // TODO: wrap this in a try/catch once we can use native ESM in Jest
     prettier.format(indexTemplate, { filepath: 'index.js' })
+  )
+
+  const types = generateTypes({ optimize, theme, props: allProps }).join('\n\n')
+
+  writeFileSync(
+    join(outputPath, 'types.d.ts'),
+    // TODO: wrap this in a try/catch once we can use native ESM in Jest
+    prettier.format(types, { filepath: 'types.d.ts' })
   )
 
   // return config for logging purposes

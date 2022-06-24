@@ -1,4 +1,4 @@
-import { propUsageCache } from '../caches'
+import { propUsageCache } from '../caches.js'
 import { getClassConditions } from './getClassConditions.js'
 
 beforeEach(() => {

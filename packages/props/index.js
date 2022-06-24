@@ -1,3 +1,4 @@
+export { props as allProps } from './lib/all.js'
 export { propsByAlias } from './lib/propsByAlias.js'
 export { propsByCategory } from './lib/propsByCategory.js'
 export { propsByName } from './lib/propsByName.js'

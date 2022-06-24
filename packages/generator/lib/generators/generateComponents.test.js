@@ -1,3 +1,4 @@
+import { readdirSync } from 'fs'
 import { join } from 'path'
 
 import { Config } from '@svelte-system/types/validation.js'
@@ -34,6 +35,18 @@ test('index file', async () => {
 
   expect(Object.keys(index)).toEqual(
     expect.arrayContaining(['Body', 'Box', 'Flex', 'Text'])
+  )
+})
+
+test('component type definitions files', () => {
+  expect(readdirSync(mockConfig.outputPath)).toEqual(
+    expect.arrayContaining([
+      'Body.svelte.d.ts',
+      'Box.svelte.d.ts',
+      'Flex.svelte.d.ts',
+      'Text.svelte.d.ts',
+      'types.d.ts',
+    ])
   )
 })
 
