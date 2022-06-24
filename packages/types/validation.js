@@ -113,7 +113,7 @@ const LengthScale = union([
   UnitlessScaleObject,
 ])
 
-export const Theme = type({
+export const Theme = object({
   // many scales are *user* optional, but effectively required when merged with default theme
 
   borders: union([BorderShorthandScaleArray, BorderShorthandScaleObject]),
@@ -148,6 +148,13 @@ export const Theme = type({
     array(NumberString),
   ]),
 
+  layerStyles: optional(
+    record(
+      pattern(string(), /[A-Za-z0-9]*/),
+      record(enums(propNames), union([number(), string()]))
+    )
+  ),
+
   letterSpacings: union([ScaleArray, ScaleObject]),
 
   lineHeights: union([
@@ -163,6 +170,13 @@ export const Theme = type({
   sizes: LengthScale,
   space: LengthScale,
 
+  text: optional(
+    record(
+      pattern(string(), /[A-Za-z0-9]*/),
+      record(enums(propNames), union([number(), string()]))
+    )
+  ),
+
   // optional configs
 
   columns: optional(array(number())),
@@ -172,7 +186,7 @@ export const Theme = type({
   flexShrink: optional(array(number())),
   order: optional(array(number())),
 
-  zIndices: optional(array(number())),
+  zIndicies: optional(array(number())),
 
   components: optional(
     record(
@@ -180,15 +194,13 @@ export const Theme = type({
       record(enums(propNames), union([number(), string()]))
     )
   ),
-
-  // TODO: add textStyles and layerStyles, if they can be supported
 })
 
 export const Config = object({
   componentsPath: optional(string()),
   docsPath: optional(string()),
-  stylesheetPath: optional(string()),
-  theme: Theme,
   outputPath: optional(string()),
   projectPath: optional(string()),
+  stylesheetPath: optional(string()),
+  theme: Theme,
 })

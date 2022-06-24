@@ -107,10 +107,7 @@ function cosmiconfigSync() {
 
             // z-index
 
-            zIndicies: {
-              base: 0,
-              overlay: 1300,
-            },
+            zIndicies: [0, 1300],
 
             // components
 

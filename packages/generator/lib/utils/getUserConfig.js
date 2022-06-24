@@ -37,6 +37,7 @@ export function getUserConfig(options) {
   const mergedConfig = {
     ...userConfig,
     theme: {
+      ...userTheme, // merge and overwrite to catch unknown props
       breakpoints: userTheme.breakpoints || defaultTheme.breakpoints,
       borders: userTheme.borders || defaultTheme.borders,
       colors: userTheme.colors || defaultTheme.colors,
@@ -61,8 +62,8 @@ export function getUserConfig(options) {
     if (!(err instanceof StructError)) {
       logger.error(err)
       return {
+        userConfigPath,
         userConfig: null,
-        userConfigPath: null,
       }
     }
 
@@ -73,8 +74,8 @@ export function getUserConfig(options) {
     logger.object(mergedConfig)
 
     return {
+      userConfigPath,
       userConfig: null,
-      userConfigPath: null,
     }
   }
 
