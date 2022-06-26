@@ -5,6 +5,7 @@
   "private": true,
   "license": "UNLICENSED",
   "workspaces": [
+    "examples/*",
     "packages/*",
     "web"
   ],
@@ -18,8 +19,8 @@
     "postpublish": "pinst --enable"
   },
   "lint-staged": {
-    "*.{json,md}": "prettier --log-level warn --write",
-    "*.js": "prettier-eslint --log-level warn --write"
+    "packages/*.{json,md}": "prettier --log-level warn --write",
+    "packages/*.js": "prettier-eslint --log-level warn --write"
   },
   "devDependencies": {
     "@babel/core": "^7.16.0",

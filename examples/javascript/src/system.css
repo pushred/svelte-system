@@ -1,0 +1,12 @@
+button {
+  appearance: none;
+  -webkit-appearance: none;
+}
+
+table {
+  border-collapse: collapse;
+}
+
+.color-primary {
+  color: #ff3e00;
+}
