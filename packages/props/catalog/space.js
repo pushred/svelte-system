@@ -54,4 +54,31 @@ export const props = [
     name: 'paddingLeft',
     scale: 'space',
   },
+
+  // extensions
+
+  {
+    alias: 'mx',
+    cssProps: ['margin-left', 'margin-right'],
+    name: 'marginX',
+    scale: 'space',
+  },
+  {
+    alias: 'my',
+    cssProps: ['margin-bottom', 'margin-top'],
+    name: 'marginY',
+    scale: 'space',
+  },
+  {
+    alias: 'px',
+    cssProps: ['padding-left', 'padding-right'],
+    name: 'paddingX',
+    scale: 'space',
+  },
+  {
+    alias: 'py',
+    cssProps: ['padding-bottom', 'padding-top'],
+    name: 'paddingY',
+    scale: 'space',
+  },
 ]

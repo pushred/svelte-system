@@ -9,7 +9,7 @@ export const props = [
     scale: 'radii',
   },
   {
-    name: 'borderTopRightRadius',
+    name: 'borderBottomLeftRadius',
     scale: 'radii',
   },
   {
@@ -17,11 +17,34 @@ export const props = [
     scale: 'radii',
   },
   {
-    name: 'borderBottomLeftRadius',
+    name: 'borderTopLeftRadius',
     scale: 'radii',
   },
   {
-    name: 'borderTopLeftRadius',
+    name: 'borderTopRightRadius',
+    scale: 'radii',
+  },
+
+  // extensions
+
+  {
+    cssProps: ['border-bottom-left-radius', 'border-bottom-right-radius'],
+    name: 'borderBottomRadius',
+    scale: 'radii',
+  },
+  {
+    cssProps: ['border-bottom-left-radius', 'border-top-left-radius'],
+    name: 'borderLeftRadius',
+    scale: 'radii',
+  },
+  {
+    cssProps: ['border-bottom-right-radius', 'border-top-right-radius'],
+    name: 'borderRightRadius',
+    scale: 'radii',
+  },
+  {
+    cssProps: ['border-top-left-radius', 'border-top-right-radius'],
+    name: 'borderTopRadius',
     scale: 'radii',
   },
 ]

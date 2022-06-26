@@ -70,10 +70,10 @@ export function generateStylesheet({ optimize, outputPath, theme }) {
   accumulator.push(
     ...styles
       .filter((style) => (optimize ? style.breakpoints.has('all') : true))
-      .map(
-        ({ className, cssProp, value }) =>
-          `.${className} { ${cssProp}: ${value} }`
-      )
+      .map(({ className, cssProps, value }) => {
+        const declarations = cssProps.map((cssProp) => `${cssProp}: ${value}`)
+        return `.${className} { ${declarations.join(';')} }`
+      })
   )
 
   for (const [breakpoint, minWidth] of Object.entries(
@@ -81,10 +81,10 @@ export function generateStylesheet({ optimize, outputPath, theme }) {
   )) {
     const breakpointStyles = styles
       .filter((style) => (optimize ? style.breakpoints.has(breakpoint) : true))
-      .map(
-        ({ className, cssProp, value }) =>
-          `.${breakpoint}\\:${className} { ${cssProp}: ${value} }`
-      )
+      .map(({ className, cssProps, value }) => {
+        const declarations = cssProps.map((cssProp) => `${cssProp}: ${value}`)
+        return `.${breakpoint}\\:${className} { ${declarations.join(';')} }`
+      })
 
     if (breakpointStyles.length === 0) continue
 

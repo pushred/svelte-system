@@ -18,13 +18,50 @@ test('creates styling data for each array scale increment', () => {
       Object {
         "breakpoints": Set {},
         "className": "gap-0",
-        "cssProp": "gap",
+        "cssProps": Array [
+          "gap",
+        ],
         "value": "0",
       },
       Object {
         "breakpoints": Set {},
         "className": "gap-1",
-        "cssProp": "gap",
+        "cssProps": Array [
+          "gap",
+        ],
+        "value": "1px",
+      },
+    ]
+  `)
+})
+
+test('creates a style for each specified CSS property', () => {
+  const result = getScaleStyles({
+    prop: {
+      cssProps: ['margin-bottom', 'margin-top'],
+      name: 'my',
+    },
+    scale: [0, 1],
+  })
+
+  expect(result).toMatchInlineSnapshot(`
+    Array [
+      Object {
+        "breakpoints": Set {},
+        "className": "my-0",
+        "cssProps": Array [
+          "margin-bottom",
+          "margin-top",
+        ],
+        "value": "0",
+      },
+      Object {
+        "breakpoints": Set {},
+        "className": "my-1",
+        "cssProps": Array [
+          "margin-bottom",
+          "margin-top",
+        ],
         "value": "1px",
       },
     ]
@@ -50,13 +87,17 @@ test('array scale with aliases', () => {
       Object {
         "breakpoints": Set {},
         "className": "gap-0",
-        "cssProp": "gap",
+        "cssProps": Array [
+          "gap",
+        ],
         "value": "0",
       },
       Object {
         "breakpoints": Set {},
         "className": "gap-1",
-        "cssProp": "gap",
+        "cssProps": Array [
+          "gap",
+        ],
         "value": "1px",
       },
     ]
@@ -77,13 +118,17 @@ test('uses prop alias for class prefix when available', () => {
       Object {
         "breakpoints": Set {},
         "className": "w-0",
-        "cssProp": "width",
+        "cssProps": Array [
+          "width",
+        ],
         "value": "0",
       },
       Object {
         "breakpoints": Set {},
         "className": "w-1",
-        "cssProp": "width",
+        "cssProps": Array [
+          "width",
+        ],
         "value": "4px",
       },
     ]
@@ -105,13 +150,17 @@ test('nested array scale', () => {
       Object {
         "breakpoints": Set {},
         "className": "color-gray-0",
-        "cssProp": "color",
+        "cssProps": Array [
+          "color",
+        ],
         "value": "#F9FAFB",
       },
       Object {
         "breakpoints": Set {},
         "className": "color-gray-1",
-        "cssProp": "color",
+        "cssProps": Array [
+          "color",
+        ],
         "value": "#F3F4F6",
       },
     ]
@@ -147,25 +196,33 @@ test('deeply nested array scale', () => {
       Object {
         "breakpoints": Set {},
         "className": "color-modes-light-gray-0",
-        "cssProp": "color",
+        "cssProps": Array [
+          "color",
+        ],
         "value": "#F9FAFB",
       },
       Object {
         "breakpoints": Set {},
         "className": "color-modes-light-gray-1",
-        "cssProp": "color",
+        "cssProps": Array [
+          "color",
+        ],
         "value": "#F3F4F6",
       },
       Object {
         "breakpoints": Set {},
         "className": "color-modes-dark-gray-0",
-        "cssProp": "color",
+        "cssProps": Array [
+          "color",
+        ],
         "value": "#F3F4F6",
       },
       Object {
         "breakpoints": Set {},
         "className": "color-modes-dark-gray-1",
-        "cssProp": "color",
+        "cssProps": Array [
+          "color",
+        ],
         "value": "#F9FAFB",
       },
     ]
@@ -190,13 +247,17 @@ test('creates styling data for each object scale increment', () => {
       Object {
         "breakpoints": Set {},
         "className": "color-text",
-        "cssProp": "color",
+        "cssProps": Array [
+          "color",
+        ],
         "value": "#fff",
       },
       Object {
         "breakpoints": Set {},
         "className": "color-background",
-        "cssProp": "color",
+        "cssProps": Array [
+          "color",
+        ],
         "value": "#000",
       },
     ]
@@ -227,25 +288,33 @@ test('nested object scale', () => {
       Object {
         "breakpoints": Set {},
         "className": "color-modes-light-text",
-        "cssProp": "color",
+        "cssProps": Array [
+          "color",
+        ],
         "value": "#000",
       },
       Object {
         "breakpoints": Set {},
         "className": "color-modes-light-background",
-        "cssProp": "color",
+        "cssProps": Array [
+          "color",
+        ],
         "value": "#FFF",
       },
       Object {
         "breakpoints": Set {},
         "className": "color-modes-dark-text",
-        "cssProp": "color",
+        "cssProps": Array [
+          "color",
+        ],
         "value": "#FFF",
       },
       Object {
         "breakpoints": Set {},
         "className": "color-modes-dark-background",
-        "cssProp": "color",
+        "cssProps": Array [
+          "color",
+        ],
         "value": "#000",
       },
     ]
@@ -278,20 +347,24 @@ test('deeply nested object scale', () => {
       Object {
         "breakpoints": Set {},
         "className": "color-modes-light-gray-50",
-        "cssProp": "color",
+        "cssProps": Array [
+          "color",
+        ],
         "value": "#F9FAFB",
       },
       Object {
         "breakpoints": Set {},
         "className": "color-modes-dark-gray-50",
-        "cssProp": "color",
+        "cssProps": Array [
+          "color",
+        ],
         "value": "#F8FAFC",
       },
     ]
   `)
 })
 
-// usage
+// optimize mode
 
 test('includes breakpoint usage', () => {
   propUsageCache.set('gap', {
@@ -316,7 +389,9 @@ test('includes breakpoint usage', () => {
           "all",
         },
         "className": "gap-0",
-        "cssProp": "gap",
+        "cssProps": Array [
+          "gap",
+        ],
         "value": "0",
       },
       Object {
@@ -324,7 +399,9 @@ test('includes breakpoint usage', () => {
           "all",
         },
         "className": "gap-1",
-        "cssProp": "gap",
+        "cssProps": Array [
+          "gap",
+        ],
         "value": "1px",
       },
       Object {
@@ -333,7 +410,9 @@ test('includes breakpoint usage', () => {
           "sm",
         },
         "className": "gap-2",
-        "cssProp": "gap",
+        "cssProps": Array [
+          "gap",
+        ],
         "value": "2px",
       },
     ]
@@ -371,7 +450,9 @@ test('includes breakpoint usage for both default prop name and prop alias', () =
           "all",
         },
         "className": "mt-0",
-        "cssProp": "margin-top",
+        "cssProps": Array [
+          "margin-top",
+        ],
         "value": "0",
       },
       Object {
@@ -379,7 +460,9 @@ test('includes breakpoint usage for both default prop name and prop alias', () =
           "all",
         },
         "className": "mt-1",
-        "cssProp": "margin-top",
+        "cssProps": Array [
+          "margin-top",
+        ],
         "value": "1px",
       },
       Object {
@@ -388,7 +471,9 @@ test('includes breakpoint usage for both default prop name and prop alias', () =
           "sm",
         },
         "className": "mt-2",
-        "cssProp": "margin-top",
+        "cssProps": Array [
+          "margin-top",
+        ],
         "value": "2px",
       },
       Object {
@@ -396,7 +481,9 @@ test('includes breakpoint usage for both default prop name and prop alias', () =
           "all",
         },
         "className": "mt-3",
-        "cssProp": "margin-top",
+        "cssProps": Array [
+          "margin-top",
+        ],
         "value": "3px",
       },
       Object {
@@ -405,7 +492,9 @@ test('includes breakpoint usage for both default prop name and prop alias', () =
           "all",
         },
         "className": "mt-4",
-        "cssProp": "margin-top",
+        "cssProps": Array [
+          "margin-top",
+        ],
         "value": "4px",
       },
       Object {
@@ -413,7 +502,9 @@ test('includes breakpoint usage for both default prop name and prop alias', () =
           "sm",
         },
         "className": "mt-5",
-        "cssProp": "margin-top",
+        "cssProps": Array [
+          "margin-top",
+        ],
         "value": "5px",
       },
     ]

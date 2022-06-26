@@ -32,7 +32,7 @@ export function getClassConditions({
   const isResponsive =
     breakpointIndex !== undefined && breakpointKey !== undefined
 
-  /** @type {[string, string, string][]} */
+  /** @type {[string, '===', string][]} */
   const conditions = []
 
   let value = propValue

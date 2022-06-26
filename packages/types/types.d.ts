@@ -46,6 +46,7 @@ type ComponentSpec = {
 
 type Prop = {
   alias?: string
+  cssProps?: string[]
   name: string
   scale?: ThemeScaleName
   transform?: ValueTransforms
@@ -66,6 +67,6 @@ type PropUsageCatalog = {
 type Style = {
   breakpoints: Set<string>
   className: string
-  cssProp: string
+  cssProps: string[]
   value: string
 }

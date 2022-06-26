@@ -59,11 +59,9 @@ export function getScaleStyles({
     }
   }
 
-  const cssProp = kebabCase(prop.name)
-
   for (const [scaleValue, keys] of Object.entries(keysByValue)) {
     styles.push({
-      cssProp,
+      cssProps: prop.cssProps || [kebabCase(prop.name)],
       breakpoints: new Set([
         ...(propValueUsage?.[keys[0]] || new Set()),
         ...(aliasPropValueUsage?.[keys[0]] || new Set()),

@@ -29,7 +29,7 @@ export function getValueStyles({ prop, values }) {
         ...(aliasPropValueUsage?.[value] || new Set()),
       ]),
       className: kebabCase(`${classPrefix}-${value}`),
-      cssProp: kebabCase(prop.name),
+      cssProps: [kebabCase(prop.name)],
     })
   }
 

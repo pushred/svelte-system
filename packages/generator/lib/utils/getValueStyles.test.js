@@ -18,13 +18,17 @@ test('creates styling data for each value', () => {
       Object {
         "breakpoints": Set {},
         "className": "text-align-left",
-        "cssProp": "text-align",
+        "cssProps": Array [
+          "text-align",
+        ],
         "value": "left",
       },
       Object {
         "breakpoints": Set {},
         "className": "text-align-right",
-        "cssProp": "text-align",
+        "cssProps": Array [
+          "text-align",
+        ],
         "value": "right",
       },
     ]
@@ -53,7 +57,9 @@ test('includes breakpoint usage', () => {
           "all",
         },
         "className": "text-align-left",
-        "cssProp": "text-align",
+        "cssProps": Array [
+          "text-align",
+        ],
         "value": "left",
       },
       Object {
@@ -62,7 +68,9 @@ test('includes breakpoint usage', () => {
           "sm",
         },
         "className": "text-align-center",
-        "cssProp": "text-align",
+        "cssProps": Array [
+          "text-align",
+        ],
         "value": "center",
       },
       Object {
@@ -70,7 +78,9 @@ test('includes breakpoint usage', () => {
           "all",
         },
         "className": "text-align-right",
-        "cssProp": "text-align",
+        "cssProps": Array [
+          "text-align",
+        ],
         "value": "right",
       },
     ]
@@ -107,7 +117,9 @@ test('includes breakpoint usage for both default prop name and prop alias', () =
           "all",
         },
         "className": "align-start",
-        "cssProp": "align-items",
+        "cssProps": Array [
+          "align-items",
+        ],
         "value": "start",
       },
       Object {
@@ -115,7 +127,9 @@ test('includes breakpoint usage for both default prop name and prop alias', () =
           "all",
         },
         "className": "align-center",
-        "cssProp": "align-items",
+        "cssProps": Array [
+          "align-items",
+        ],
         "value": "center",
       },
       Object {
@@ -123,7 +137,9 @@ test('includes breakpoint usage for both default prop name and prop alias', () =
           "sm",
         },
         "className": "align-end",
-        "cssProp": "align-items",
+        "cssProps": Array [
+          "align-items",
+        ],
         "value": "end",
       },
       Object {
@@ -131,7 +147,9 @@ test('includes breakpoint usage for both default prop name and prop alias', () =
           "sm",
         },
         "className": "align-fill",
-        "cssProp": "align-items",
+        "cssProps": Array [
+          "align-items",
+        ],
         "value": "fill",
       },
       Object {
@@ -139,7 +157,9 @@ test('includes breakpoint usage for both default prop name and prop alias', () =
           "all",
         },
         "className": "align-space-evenly",
-        "cssProp": "align-items",
+        "cssProps": Array [
+          "align-items",
+        ],
         "value": "space-evenly",
       },
       Object {
@@ -148,7 +168,9 @@ test('includes breakpoint usage for both default prop name and prop alias', () =
           "all",
         },
         "className": "align-stretch",
-        "cssProp": "align-items",
+        "cssProps": Array [
+          "align-items",
+        ],
         "value": "stretch",
       },
     ]
