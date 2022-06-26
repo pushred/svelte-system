@@ -53,9 +53,18 @@ function generateClassProps({ optimize, prop, theme }) {
 }
 
 /**
- * @param {{ optimize: boolean, outputPath: string, theme: Theme }} options
+ * @param {object} params
+ * @param {boolean} params.optimize
+ * @param {string} params.outputPath
+ * @param {Theme} params.theme
+ * @param {boolean} params.typescript
  */
-export function generateComponents({ optimize, outputPath, theme }) {
+export function generateComponents({
+  optimize,
+  outputPath,
+  theme,
+  typescript,
+}) {
   makeDir.sync(outputPath)
 
   /** @type ComponentSpec[] */
@@ -147,9 +156,10 @@ export function generateComponents({ optimize, outputPath, theme }) {
     // write component
 
     const tagName = (theme.components || {})[component.name]?.as || 'div'
+    const scriptLang = typescript ? `lang="ts"` : ''
 
     const componentTemplate = `
-      <script>
+      <script ${scriptLang}>
         export let as = '${tagName}'
         export let testId = undefined
         ${exports.join('\n')}
@@ -185,7 +195,7 @@ export function generateComponents({ optimize, outputPath, theme }) {
         ${generatedPropTypes.join('\n')}
       }
 
-      export default class ${component.name} extends SvelteComponentTyped<BoxProps, {}, {}> {}
+      export default class ${component.name} extends SvelteComponentTyped<${component.name}Props, {}, {}> {}
     `
 
     writeFileSync(

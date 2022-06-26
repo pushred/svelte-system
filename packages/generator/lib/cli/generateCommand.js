@@ -51,6 +51,7 @@ async function generate(cmdOptions, userConfig) {
       theme,
       optimize: cmdOptions.optimize,
       outputPath: componentsPath,
+      typescript: userConfig.typescript,
     })
 
     const relativeOutputPath = relative(resolve('..'), componentsPath)

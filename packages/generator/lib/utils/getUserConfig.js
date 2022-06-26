@@ -1,3 +1,6 @@
+import { dirname, join } from 'node:path'
+import { accessSync, constants } from 'node:fs'
+
 import { assert, StructError } from 'superstruct'
 
 import { Config } from '@svelte-system/types/validation.js'
@@ -10,6 +13,16 @@ import { logger } from '../cli/logger.js'
  * @typedef { import('@svelte-system/types/cli').SharedCommandOptions } CliOptions
  * @typedef { import('@svelte-system/types').Config } UserConfig
  */
+
+function checkTypeScriptProject(userConfigPath) {
+  try {
+    const rootPath = dirname(userConfigPath)
+    accessSync(join(rootPath, 'tsconfig.json'), constants.R_OK)
+    return true
+  } catch (err) {
+    return false
+  }
+}
 
 function lowerFirst(string = '') {
   return `${string.charAt(0).toLowerCase()}${string.slice(1)}`
@@ -54,6 +67,10 @@ export function getUserConfig(options) {
       flexShrink: userTheme.flexShrink || defaultTheme.flexShrink,
       order: userTheme.order || defaultTheme.order,
     },
+    typescript:
+      userConfig.typescript === undefined
+        ? checkTypeScriptProject(userConfigPath)
+        : userConfig.typescript,
   }
 
   try {

@@ -9,6 +9,7 @@ import rgbaColorRegex from 'rgba-regex'
 
 import {
   array,
+  boolean,
   enums,
   integer,
   literal,
@@ -203,4 +204,5 @@ export const Config = object({
   projectPath: optional(string()),
   stylesheetPath: optional(string()),
   theme: Theme,
+  typescript: optional(boolean()),
 })

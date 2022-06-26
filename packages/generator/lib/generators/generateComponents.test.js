@@ -25,6 +25,7 @@ beforeAll(() => {
   generateComponents({
     outputPath: mockConfig.outputPath,
     theme: mockConfig.theme,
+    typescript: mockConfig.typescript,
   })
 })
 

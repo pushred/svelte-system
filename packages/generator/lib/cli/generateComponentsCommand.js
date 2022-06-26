@@ -46,6 +46,7 @@ export async function generateComponentsCommand(cmdOptions) {
     optimize: cmdOptions.optimize,
     outputPath: componentsPath,
     theme: userConfig.theme,
+    typescript: userConfig.typescript,
   }
 
   const components = generateComponents(generatorOptions)
