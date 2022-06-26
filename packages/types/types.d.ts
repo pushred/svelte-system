@@ -47,6 +47,7 @@ type ComponentSpec = {
 type Prop = {
   alias?: string
   cssProps?: string[]
+  cssPropValueTemplate?: (value: string) => string
   name: string
   scale?: ThemeScaleName
   transform?: ValueTransforms

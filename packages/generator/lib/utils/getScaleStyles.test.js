@@ -68,6 +68,39 @@ test('creates a style for each specified CSS property', () => {
   `)
 })
 
+test('creates a style with provided value template', () => {
+  const result = getScaleStyles({
+    prop: {
+      cssProps: ['grid-column-end'],
+      cssPropValueTemplate: (value) => `span ${value}`,
+      name: 'gridColSpan',
+      transform: 'string',
+    },
+    scale: [0, 1],
+  })
+
+  expect(result).toMatchInlineSnapshot(`
+    Array [
+      Object {
+        "breakpoints": Set {},
+        "className": "grid-col-span-0",
+        "cssProps": Array [
+          "grid-column-end",
+        ],
+        "value": "span 0",
+      },
+      Object {
+        "breakpoints": Set {},
+        "className": "grid-col-span-1",
+        "cssProps": Array [
+          "grid-column-end",
+        ],
+        "value": "span 1",
+      },
+    ]
+  `)
+})
+
 test('array scale with aliases', () => {
   const gaps = [0, 1]
 

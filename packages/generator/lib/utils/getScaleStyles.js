@@ -60,6 +60,8 @@ export function getScaleStyles({
   }
 
   for (const [scaleValue, keys] of Object.entries(keysByValue)) {
+    const transformedValue = transformValue(scaleValue, prop.transform)
+
     styles.push({
       cssProps: prop.cssProps || [kebabCase(prop.name)],
       breakpoints: new Set([
@@ -67,7 +69,10 @@ export function getScaleStyles({
         ...(aliasPropValueUsage?.[keys[0]] || new Set()),
       ]),
       className: kebabCase(`${classPrefix}-${keys[0]}`),
-      value: transformValue(scaleValue, prop.transform),
+      value:
+        typeof prop.cssPropValueTemplate === 'function'
+          ? prop.cssPropValueTemplate(transformedValue)
+          : transformedValue,
     })
   }
 
